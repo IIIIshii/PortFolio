@@ -1,11 +1,96 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <meta charset = "UTF-8">
-        <title>こんにちは</title>
-    </head>
-    <body>
-        <h1>こんにちは</h1>
-        <h1>ここは建設予定地です</h1>
-    </body>
-</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iiiishii's Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">Portfolio</div>
+            <ul class="nav-links">
+                <li><a href="#home">ホーム</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">プロジェクト</a></li>
+                <li><a href="#contact">Link</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Welcome to iiiishii's Portfolio</h1>
+                <p>勉強中</p>
+                <a href="#contact" class="cta-button">Link</a>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <h2>About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p> Hello, I'm iiiishii. I'm a student of the Kyoto University.</p>
+                    <div class="skills">
+                        <h3>スキル</h3>
+                        <ul>
+                            <li>test</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects">
+            <h2>プロジェクト</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <img src="https://via.placeholder.com/300x200" alt="プロジェクト1">
+                    <h3>プロジェクト1</h3>
+                    <p>test</p>
+                    <div class="project-links">
+                        <a href="#" class="project-link"><i class="fab fa-github"></i> GitHub</a>
+                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> デモ</a>
+                    </div>
+                </div>
+                <!-- 他のプロジェクトカードを追加 -->
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <h2>Link</h2>
+            <div class="contact-content">
+                <form id="contact-form" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">test</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">test</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">test</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-button">test</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        </div>
+        <p>&copy; 2024 iiiishii's Portfolio. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
