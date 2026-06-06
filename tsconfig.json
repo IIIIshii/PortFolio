@@ -1,19 +1,16 @@
 {
     "compilerOptions": {
         "target": "ES2020",
-        "module": "ES2020",
+        "module": "ESNext",
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "outDir": "./dist",
-        "rootDir": "./",
-        "moduleResolution": "node"
+        "outDir": ".",
+        "rootDir": ".",
+        "moduleResolution": "bundler"
     },
-    "include": [
-        "*.ts"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
-} 
+    "include": ["main.ts"],
+    "exclude": ["node_modules"]
+}
