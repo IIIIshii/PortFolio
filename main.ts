@@ -38,11 +38,21 @@ const readoutNum = document.getElementById("readout-num");
 const readoutName = document.getElementById("readout-name");
 const ticks = Array.from(document.querySelectorAll<HTMLButtonElement>(".knob-tick"));
 
+const SWEEP_END = angleFor(SECTIONS.length - 1); // +150deg (tick "05")
+const SWEEP_TOTAL = SWEEP_END - SWEEP_START;     // 300deg of dial travel
+
 let currentIndex = 0;
 let dragging = false;
-let navLock = false;
-let navTarget = -1;
-let navTimer = 0;
+
+const clamp01 = (f: number): number => Math.max(0, Math.min(1, f));
+/** Total scrollable distance: 0 = page top, maxScroll() = page bottom. */
+const maxScroll = (): number =>
+    Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+/** scroll fraction (0=top, 1=bottom) ↔ dial angle (00 tick ↔ 05 tick) */
+const fracToAngle = (f: number): number => SWEEP_START + clamp01(f) * SWEEP_TOTAL;
+const angleToFrac = (a: number): number => clamp01((a - SWEEP_START) / SWEEP_TOTAL);
+const nearestIndex = (angle: number): number =>
+    clampIndex(Math.round((angle - SWEEP_START) / SWEEP_STEP));
 
 function paintReadout(i: number): void {
     if (readoutNum) readoutNum.textContent = pad(i);
@@ -50,10 +60,11 @@ function paintReadout(i: number): void {
     ticks.forEach((t, k) => t.classList.toggle("active", k === i));
 }
 
-/** Reflect a section in the knob (rotation + readout + aria). No scrolling. */
-function setActive(i: number): void {
-    currentIndex = clampIndex(i);
-    dial?.style.setProperty("--angle", `${angleFor(currentIndex)}deg`);
+/** Reflect a scroll fraction on the knob: dial rotation + readout + aria. No scrolling. */
+function syncKnob(frac: number): void {
+    const angle = fracToAngle(frac);
+    dial?.style.setProperty("--angle", `${angle}deg`);
+    currentIndex = nearestIndex(angle);
     paintReadout(currentIndex);
     if (knob) {
         knob.setAttribute("aria-valuenow", String(currentIndex));
@@ -61,22 +72,17 @@ function setActive(i: number): void {
     }
 }
 
-/** Navigate to a section: rotate knob + scroll the page there. */
-function goTo(i: number): void {
+/** Smooth-scroll to a section (used by ticks + keyboard). */
+function goToSection(i: number): void {
     const idx = clampIndex(i);
-    navTarget = idx;
-    navLock = true;
-    setActive(idx);
     document.getElementById(SECTIONS[idx])?.scrollIntoView({
         behavior: prefersReducedMotion ? "auto" : "smooth",
         block: "start",
     });
-    window.clearTimeout(navTimer);
-    navTimer = window.setTimeout(() => { navLock = false; }, 1000);
 }
 
 if (knob && dial) {
-    /* angle of the pointer position, expressed as a dial rotation (0deg = up) */
+    /* pointer position → dial angle, clamped to the 00‒05 travel arc */
     const pointerToAngle = (x: number, y: number): number => {
         const r = knob.getBoundingClientRect();
         const cx = r.left + r.width / 2;
@@ -84,65 +90,66 @@ if (knob && dial) {
         let deg = (Math.atan2(y - cy, x - cx) * 180) / Math.PI + 90;
         if (deg > 180) deg -= 360;
         if (deg < -180) deg += 360;
-        return Math.max(SWEEP_START, Math.min(angleFor(SECTIONS.length - 1), deg));
+        return Math.max(SWEEP_START, Math.min(SWEEP_END, deg));
     };
-    const nearestIndex = (angle: number): number =>
-        clampIndex(Math.round((angle - SWEEP_START) / SWEEP_STEP));
 
-    /* Drag to rotate */
+    /* Drag the knob → scroll the page continuously, in immediate sync */
     knob.addEventListener("pointerdown", (e: PointerEvent) => {
         if ((e.target as HTMLElement).closest(".knob-tick")) return; // ticks handle their own click
         dragging = true;
-        dial.style.transition = "none";
+        dial.style.transition = "none"; // follow the finger with no lag
         try { knob.setPointerCapture(e.pointerId); } catch { /* noop */ }
     });
     knob.addEventListener("pointermove", (e: PointerEvent) => {
         if (!dragging) return;
-        const a = pointerToAngle(e.clientX, e.clientY);
-        dial.style.setProperty("--angle", `${a}deg`);
-        paintReadout(nearestIndex(a));
+        const frac = angleToFrac(pointerToAngle(e.clientX, e.clientY));
+        window.scrollTo(0, frac * maxScroll());
+        syncKnob(frac);
     });
     const endDrag = (e: PointerEvent): void => {
         if (!dragging) return;
         dragging = false;
         dial.style.transition = "";
         try { knob.releasePointerCapture(e.pointerId); } catch { /* noop */ }
-        goTo(nearestIndex(pointerToAngle(e.clientX, e.clientY)));
     };
     knob.addEventListener("pointerup", endDrag);
     knob.addEventListener("pointercancel", endDrag);
 
-    /* Scroll-wheel over the knob steps sections */
-    let wheelLock = false;
+    /* Scroll-wheel over the knob scrolls the page (continuous) */
     knob.addEventListener("wheel", (e: WheelEvent) => {
         e.preventDefault();
-        if (wheelLock) return;
-        wheelLock = true;
-        window.setTimeout(() => { wheelLock = false; }, 260);
-        goTo(currentIndex + (e.deltaY > 0 ? 1 : -1));
+        window.scrollBy(0, e.deltaY);
     }, { passive: false });
 
-    /* Keyboard (role=slider) */
+    /* Keyboard (role=slider): step through sections */
     knob.addEventListener("keydown", (e: KeyboardEvent) => {
         let handled = true;
         switch (e.key) {
-            case "ArrowUp": case "ArrowRight": goTo(currentIndex + 1); break;
-            case "ArrowDown": case "ArrowLeft": goTo(currentIndex - 1); break;
-            case "Home": goTo(0); break;
-            case "End": goTo(SECTIONS.length - 1); break;
-            case "Enter": case " ": goTo(currentIndex); break;
+            case "ArrowUp": case "ArrowRight": goToSection(currentIndex + 1); break;
+            case "ArrowDown": case "ArrowLeft": goToSection(currentIndex - 1); break;
+            case "Home": goToSection(0); break;
+            case "End": goToSection(SECTIONS.length - 1); break;
             default: handled = false;
         }
         if (handled) e.preventDefault();
     });
 
-    /* Tick buttons jump directly */
+    /* Tick buttons jump directly to a section */
     ticks.forEach((t) => {
-        t.addEventListener("click", () => {
-            const idx = Number(t.dataset.index ?? "0");
-            goTo(idx);
-        });
+        t.addEventListener("click", () => goToSection(Number(t.dataset.index ?? "0")));
     });
+
+    /* Page scroll → keep the knob in sync (continuous, both directions) */
+    let scrollRaf = 0;
+    const onScroll = (): void => {
+        if (dragging || scrollRaf) return;
+        scrollRaf = window.requestAnimationFrame(() => {
+            scrollRaf = 0;
+            syncKnob(window.scrollY / maxScroll());
+        });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
 }
 
 /* ---------- Scroll reveal ---------- */
@@ -159,24 +166,6 @@ if (prefersReducedMotion || !("IntersectionObserver" in window)) {
         });
     }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
     reveals.forEach((el) => revealObserver.observe(el));
-}
-
-/* ---------- Scrollspy → drives the knob ---------- */
-const sectionEls = document.querySelectorAll<HTMLElement>("section[id]");
-if ("IntersectionObserver" in window) {
-    const spy = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            const idx = SECTIONS.indexOf(entry.target.id);
-            if (idx < 0 || dragging) return;
-            if (navLock) {
-                if (idx === navTarget) navLock = false;
-                else return;
-            }
-            setActive(idx);
-        });
-    }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
-    sectionEls.forEach((s) => spy.observe(s));
 }
 
 /* ---------- Rail clock ---------- */
@@ -198,4 +187,4 @@ const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
 /* ---------- Init ---------- */
-setActive(0);
+syncKnob(window.scrollY / maxScroll());
