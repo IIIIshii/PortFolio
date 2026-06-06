@@ -120,20 +120,20 @@ strong { color: var(--silver-bright); font-weight: 300; }
     z-index: -3;
     background:
         /* uneven luminance (mura) so the bright hairlines glint unevenly,
-           tall narrow blotches aligned with the vertical brush direction */
-        radial-gradient(15% 46% at 20% 22%, rgba(255, 255, 255, .030), transparent 64%),
-        radial-gradient(12% 40% at 34% 71%, rgba(0, 0, 0, .085), transparent 60%),
-        radial-gradient(18% 54% at 13% 58%, rgba(255, 255, 255, .024), transparent 66%),
-        radial-gradient(14% 44% at 58% 36%, rgba(0, 0, 0, .075), transparent 62%),
-        radial-gradient(16% 50% at 80% 64%, rgba(255, 255, 255, .022), transparent 66%),
-        radial-gradient(12% 38% at 88% 12%, rgba(0, 0, 0, .065), transparent 60%),
-        radial-gradient(15% 48% at 70% 86%, rgba(255, 255, 255, .018), transparent 64%),
-        /* multi-frequency vertical hairline brushing (ref: .metal6, adapted to black) */
-        repeating-linear-gradient(to right,
+           wide flat blotches aligned with the horizontal brush direction */
+        radial-gradient(46% 15% at 20% 22%, rgba(255, 255, 255, .030), transparent 64%),
+        radial-gradient(40% 12% at 34% 71%, rgba(0, 0, 0, .085), transparent 60%),
+        radial-gradient(54% 18% at 13% 58%, rgba(255, 255, 255, .024), transparent 66%),
+        radial-gradient(44% 14% at 58% 36%, rgba(0, 0, 0, .075), transparent 62%),
+        radial-gradient(50% 16% at 80% 64%, rgba(255, 255, 255, .022), transparent 66%),
+        radial-gradient(38% 12% at 88% 12%, rgba(0, 0, 0, .065), transparent 60%),
+        radial-gradient(48% 15% at 70% 86%, rgba(255, 255, 255, .018), transparent 64%),
+        /* multi-frequency horizontal hairline brushing (ref: .metal6, adapted to black) */
+        repeating-linear-gradient(to bottom,
             hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .06) 7px),
-        repeating-linear-gradient(to right,
+        repeating-linear-gradient(to bottom,
             hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 3px, hsla(0, 0%, 0%, .20) 4px),
-        repeating-linear-gradient(to right,
+        repeating-linear-gradient(to bottom,
             hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .08) 2px),
         /* deep directional metal base */
         linear-gradient(350deg, hsl(0, 0%, 4%) 0%, hsl(0, 0%, 9%) 37%, hsl(0, 0%, 5%) 76%, hsl(0, 0%, 3%) 100%);
