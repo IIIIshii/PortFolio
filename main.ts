@@ -34,8 +34,6 @@ document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) =>
 /* ---------- Rotary knob ---------- */
 const knob = document.getElementById("knob");
 const dial = document.getElementById("knob-dial");
-const readoutNum = document.getElementById("readout-num");
-const readoutName = document.getElementById("readout-name");
 const ticks = Array.from(document.querySelectorAll<HTMLButtonElement>(".knob-tick"));
 
 const SWEEP_END = angleFor(SECTIONS.length - 1); // +150deg (tick "05")
@@ -55,8 +53,6 @@ const nearestIndex = (angle: number): number =>
     clampIndex(Math.round((angle - SWEEP_START) / SWEEP_STEP));
 
 function paintReadout(i: number): void {
-    if (readoutNum) readoutNum.textContent = pad(i);
-    if (readoutName) readoutName.textContent = NAMES[i];
     ticks.forEach((t, k) => t.classList.toggle("active", k === i));
 }
 

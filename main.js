@@ -31,8 +31,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 /* ---------- Rotary knob ---------- */
 const knob = document.getElementById("knob");
 const dial = document.getElementById("knob-dial");
-const readoutNum = document.getElementById("readout-num");
-const readoutName = document.getElementById("readout-name");
 const ticks = Array.from(document.querySelectorAll(".knob-tick"));
 const SWEEP_END = angleFor(SECTIONS.length - 1); // +150deg (tick "05")
 const SWEEP_TOTAL = SWEEP_END - SWEEP_START; // 300deg of dial travel
@@ -46,10 +44,6 @@ const fracToAngle = (f) => SWEEP_START + clamp01(f) * SWEEP_TOTAL;
 const angleToFrac = (a) => clamp01((a - SWEEP_START) / SWEEP_TOTAL);
 const nearestIndex = (angle) => clampIndex(Math.round((angle - SWEEP_START) / SWEEP_STEP));
 function paintReadout(i) {
-    if (readoutNum)
-        readoutNum.textContent = pad(i);
-    if (readoutName)
-        readoutName.textContent = NAMES[i];
     ticks.forEach((t, k) => t.classList.toggle("active", k === i));
 }
 /** Reflect a scroll fraction on the knob: dial rotation + readout + aria. No scrolling. */

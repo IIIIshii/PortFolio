@@ -1,7 +1,7 @@
 /* ============================================================
    iiiishii — Portfolio
    Theme: integrated-amplifier front panel
-   black hairline metal × thin silver × rotary knob nav
+   black hairline metal × thin silver × concentric-hairline rotary knob nav
    ============================================================ */
 
 /* ---------- Reset ---------- */
@@ -571,55 +571,69 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 
 .knob {
-    --size: 132px;
-    --scale-r: 57px;
-    --readout: 54px;
+    --size: 150px;     /* bounding box (footprint): black wheel + outer scale */
+    --wheel: 96px;     /* the black-metal wheel itself */
+    --scale-r: 64px;   /* radius of the tick boxes (clear of the wheel) */
     --angle: -150deg;
     position: relative;
     width: var(--size);
     height: var(--size);
     border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background: radial-gradient(circle at 50% 36%, #3b3f44 0%, #212428 46%, #0d0e10 100%);
-    box-shadow:
-        inset 0 2px 4px rgba(255, 255, 255, .14),
-        inset 0 -7px 16px rgba(0, 0, 0, .75),
-        0 14px 30px rgba(0, 0, 0, .55);
     cursor: grab;
     touch-action: none;
     user-select: none;
 }
 .knob:active { cursor: grabbing; }
-/* glossy reflection on the bezel */
+/* fixed light source over the wheel (does NOT rotate): glossy sheen, rim bevel, cast shadow */
 .knob::before {
     content: "";
     position: absolute;
-    inset: 0;
+    left: 50%; top: 50%;
+    width: var(--wheel); height: var(--wheel);
+    margin: calc(var(--wheel) / -2) 0 0 calc(var(--wheel) / -2);
     border-radius: 50%;
-    z-index: 4;
+    z-index: 2;
     pointer-events: none;
     background:
-        radial-gradient(70% 55% at 32% 20%, rgba(255, 255, 255, .22), transparent 58%),
-        radial-gradient(60% 50% at 72% 88%, rgba(255, 255, 255, .06), transparent 60%);
-    mix-blend-mode: screen;
+        /* broad glossy sheen over the upper half */
+        radial-gradient(82% 62% at 42% 10%, rgba(255, 255, 255, .34), rgba(255, 255, 255, 0) 62%),
+        /* faint cool bounce light from below */
+        radial-gradient(70% 44% at 50% 98%, rgba(190, 205, 225, .12), rgba(255, 255, 255, 0) 55%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .22),
+        inset 0 -3px 10px rgba(0, 0, 0, .6),
+        0 12px 26px rgba(0, 0, 0, .6);
+}
+/* tight specular hotspot — the bright "shine" that reads as polished, not matte */
+.knob::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: var(--wheel); height: var(--wheel);
+    margin: calc(var(--wheel) / -2) 0 0 calc(var(--wheel) / -2);
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(24% 19% at 36% 19%, rgba(255, 255, 255, .9), rgba(255, 255, 255, 0) 70%);
 }
 
-/* outer tick scale (clickable) */
-.knob-scale { position: absolute; inset: 0; z-index: 3; }
+/* outer tick scale (clickable) — sits OUTSIDE the black wheel */
+.knob-scale { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .knob-tick {
     position: absolute;
     left: 50%; top: 50%;
-    width: 30px; height: 30px;
-    margin: -15px 0 0 -15px;
-    /* place box center on the circle (angle --a), then un-rotate so it stays upright */
-    transform: rotate(var(--a)) translateY(calc(-1 * var(--scale-r))) rotate(calc(-1 * var(--a)));
+    width: 40px; height: 28px;
+    margin: -14px 0 0 -20px;               /* center the box on the knob center */
+    /* place the box on the scale circle (angle --a), oriented radially */
+    transform: rotate(var(--a)) translateY(calc(-1 * var(--scale-r)));
     display: flex;
-    flex-direction: column;
+    flex-direction: column;                /* with order: label (outer) + line (inner) */
     align-items: center;
-    justify-content: flex-start;
-    gap: 3px;
-    background: none; border: none; padding: 0; cursor: pointer;
+    justify-content: center;
+    gap: 4px;
+    background: none; border: none; padding: 0;
+    cursor: pointer;
+    pointer-events: auto;                  /* only the ticks are clickable */
 }
 .tick-line {
     width: 2px; height: 9px;
@@ -628,6 +642,8 @@ strong { color: var(--silver-bright); font-weight: 300; }
     transition: background var(--t), box-shadow var(--t);
 }
 .tick-label {
+    order: -1;                             /* number on the outer side of the line */
+    transform: rotate(calc(-1 * var(--a)));/* keep the number upright */
     font-size: .58rem;
     line-height: 1;
     color: var(--silver-dim);
@@ -636,15 +652,46 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .knob-tick.active .tick-line { background: var(--silver-bright); box-shadow: 0 0 7px var(--glow); }
 .knob-tick.active .tick-label { color: var(--silver-bright); }
 
-/* rotating dial with knurl + pointer */
+/* the rotating wheel: concentric hairline–finished black metal */
 .knob-dial {
     position: absolute;
-    inset: 12%;
+    left: 50%; top: 50%;
+    width: var(--wheel); height: var(--wheel);
+    margin: calc(var(--wheel) / -2) 0 0 calc(var(--wheel) / -2);
     border-radius: 50%;
     z-index: 1;
+    /* Concentric-circle hairline finish (lathe-turned / spun metal).
+       Multiple repeating-radial-gradient layers at different frequencies
+       create fine concentric grooves that catch light as the dial rotates. */
     background:
-        repeating-conic-gradient(from 0deg, #2c2f33 0deg 3deg, #1b1d20 3deg 6deg);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05), inset 0 6px 14px rgba(0, 0, 0, .65);
+        /* raised centre cap — smooth, slightly lighter hub */
+        radial-gradient(circle at 50% 50%,
+            #3a3e44 0%, #2c2f34 8%, rgba(44, 47, 52, 0) 16%),
+        /* ultra-fine hairline grooves (highest frequency) */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, .07) 0px,
+            rgba(0,   0,   0,   .10) 1px,
+            rgba(255, 255, 255, .04) 2px),
+        /* medium-frequency concentric rings for depth */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, .05) 0px,
+            rgba(0,   0,   0,   .08) 2px,
+            rgba(255, 255, 255, .03) 4px),
+        /* broad tonal bands — simulates uneven lathe pressure / polish */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, .025) 0px,
+            rgba(0,   0,   0,   .06)  5px,
+            rgba(255, 255, 255, .015) 10px),
+        /* domed body gradient — dark at rim, slightly lighter at centre */
+        radial-gradient(circle at 50% 50%,
+            #2c2f34 0%,
+            #1a1c1f 28%,
+            #0e1012 55%,
+            #050607 100%);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .10),
+        inset 0 0 28px rgba(0, 0, 0, .82),
+        inset 0 0 0 3px rgba(0, 0, 0, .4);
     transform: rotate(var(--angle));
     transition: transform .55s var(--ease);
 }
@@ -659,44 +706,16 @@ strong { color: var(--silver-bright); font-weight: 300; }
     box-shadow: 0 0 8px var(--glow);
 }
 
-/* center digital readout */
-.knob-readout {
-    position: relative;
-    z-index: 2;
-    width: var(--readout);
-    height: var(--readout);
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    text-align: center;
-    background: radial-gradient(circle at 50% 38%, #14181c, #050708 80%);
-    box-shadow: inset 0 0 12px rgba(0, 0, 0, .9), inset 0 0 0 1px rgba(255, 255, 255, .06), 0 1px 0 var(--bevel-light);
-}
-.readout-num {
-    font-size: calc(var(--readout) * .3);
-    line-height: 1;
-    color: var(--silver-bright);
-    text-shadow: 0 0 8px var(--glow);
-}
-.readout-name {
-    display: none;
-    font-size: .5rem;
-    letter-spacing: .1em;
-    color: var(--silver-dim);
-    margin-top: 2px;
-}
-
 /* Desktop enhancement: large centered-right knob + reserved gutter */
 @media (min-width: 1200px) {
     body { padding-right: 384px; }
     .rail { padding-right: 26px; }
     .knob-nav { right: 48px; bottom: auto; top: 50%; transform: translateY(-50%); }
-    .knob { --size: 312px; --scale-r: 132px; --readout: 120px; }
-    .knob-tick { width: 44px; height: 44px; margin: -22px 0 0 -22px; }
+    .knob { --size: 320px; --wheel: 224px; --scale-r: 140px; }
+    .knob-tick { width: 60px; height: 40px; margin: -20px 0 0 -30px; }
     .tick-line { height: 12px; }
     .tick-label { font-size: .74rem; }
     .knob-caption, .knob-hint { display: block; font-size: .68rem; }
-    .readout-name { display: block; font-size: .64rem; }
 }
 
 /* ---------- Reveal on scroll ---------- */
