@@ -38,12 +38,15 @@
     --t: .35s var(--ease);
 
     --rail-h: 46px;
-    --amp-h: 132px;
+    --amp-h: 240px;                            /* tall panel: slim LCD strip + large metal area */
+    --amp-lcd-h: 92px;                         /* height of the upper LCD strip (the rest is metal) */
+    --amp-wheel: clamp(84px, 17vw, 212px);     /* section-wheel footprint (straddles both areas) */
+    --amp-wheel-gap: clamp(8px, 2.5vw, 44px);  /* wheel offset from the right edge */
 
     /* dot-matrix display sizing (fluid so the 10-char readout always fits) */
-    --dm-dot: clamp(2px, 0.7vw, 5px);   /* diameter of one LED dot */
-    --dm-gap: clamp(1px, 0.3vw, 2px);   /* gap between dots inside a glyph */
-    --dm-char-gap: clamp(4px, 1.1vw, 9px); /* gap between glyph cells */
+    --dm-dot: clamp(2px, 0.75vw, 6px);   /* diameter of one LED dot */
+    --dm-gap: clamp(1px, 0.3vw, 2px);    /* gap between dots inside a glyph */
+    --dm-char-gap: clamp(4px, 1.2vw, 10px); /* gap between glyph cells */
 }
 
 /* ---------- Base ---------- */
@@ -284,6 +287,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     display: flex;
     align-items: center;
     padding-top: var(--rail-h);
+    padding-bottom: var(--amp-h); /* keep hero content clear of the fixed panel */
 }
 .hero-inner { max-width: 680px; }
 .eyebrow {
@@ -562,7 +566,13 @@ strong { color: var(--silver-bright); font-weight: 300; }
 /* ============================================================
    ROTARY KNOB NAV   (lives on the amp front panel, right side)
    ============================================================ */
-.knob-nav { display: flex; align-items: center; flex: none; }
+.knob-nav {
+    position: absolute;                 /* mounted over the panel, straddling both halves */
+    right: var(--amp-wheel-gap);
+    top: 50%;                           /* centred on the panel; reaches up through the seam into the LCD */
+    transform: translateY(-50%);
+    z-index: 5;
+}
 .knob-cluster { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .knob-caption, .knob-hint {
     display: none;
@@ -573,9 +583,9 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 
 .knob {
-    --size: clamp(80px, 11vw, 110px);    /* footprint: wheel + the two limit marks */
-    --wheel: clamp(62px, 9vw, 90px);     /* the black-metal wheel itself */
-    --scale-r: clamp(38px, 5.6vw, 52px); /* radius of the min/max marks */
+    --size: var(--amp-wheel);                 /* footprint: wheel + the two limit marks */
+    --wheel: calc(var(--amp-wheel) * 0.78);   /* the black-metal wheel itself */
+    --scale-r: calc(var(--amp-wheel) * 0.46); /* radius of the min/max marks */
     --angle: -150deg;
     position: relative;
     width: var(--size);
@@ -598,21 +608,18 @@ strong { color: var(--silver-bright); font-weight: 300; }
     pointer-events: none;
     background:
         /* spun-metal cross reflection (fixed light, does NOT rotate) — the
-           simurai radial "conical" highlight that sells turned/lathed metal */
-        radial-gradient(46% 7%  at 0%   50%,  hsla(0, 0%, 100%, .16), transparent 100%),
-        radial-gradient(46% 7%  at 100% 50%,  hsla(0, 0%, 100%, .14), transparent 100%),
-        radial-gradient(7%  46% at 50%  0%,   hsla(0, 0%, 100%, .14), transparent 100%),
-        radial-gradient(7%  46% at 50%  100%, hsla(0, 0%, 100%, .18), transparent 100%),
-        /* broad glossy sheen over the upper half */
-        radial-gradient(82% 62% at 42% 10%, rgba(255, 255, 255, .26), rgba(255, 255, 255, 0) 62%),
-        /* faint cool bounce light from below */
-        radial-gradient(70% 44% at 50% 98%, rgba(190, 205, 225, .10), rgba(255, 255, 255, 0) 55%);
+           simurai radial "conical" highlight that sells turned/lathed metal.
+           No round glossy sheen: the radial cross is the only reflection. */
+        radial-gradient(52% 9%  at 0%   50%,  hsla(0, 0%, 100%, .30), transparent 100%),
+        radial-gradient(52% 9%  at 100% 50%,  hsla(0, 0%, 100%, .26), transparent 100%),
+        radial-gradient(9%  52% at 50%  0%,   hsla(0, 0%, 100%, .26), transparent 100%),
+        radial-gradient(9%  52% at 50%  100%, hsla(0, 0%, 100%, .34), transparent 100%);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, .22),
         inset 0 -3px 10px rgba(0, 0, 0, .6),
         0 12px 26px rgba(0, 0, 0, .6);
 }
-/* tight specular hotspot — the bright "shine" that reads as polished, not matte */
+/* center specular hotspot — the bright hub where the cross reflections meet */
 .knob::after {
     content: "";
     position: absolute;
@@ -622,7 +629,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     border-radius: 50%;
     z-index: 2;
     pointer-events: none;
-    background: radial-gradient(24% 19% at 36% 19%, rgba(255, 255, 255, .9), rgba(255, 255, 255, 0) 70%);
+    background: radial-gradient(22% 18% at 50% 48%, rgba(255, 255, 255, .72), rgba(255, 255, 255, 0) 72%);
 }
 
 /* outer tick scale (clickable) — sits OUTSIDE the black wheel */
@@ -722,27 +729,77 @@ strong { color: var(--silver-bright); font-weight: 300; }
     left: 0; right: 0; bottom: 0;
     height: var(--amp-h);
     z-index: 850;
+    display: flex;
+    flex-direction: column;            /* top = LCD half, bottom = metal half */
+    border-top: 1px solid var(--line-strong);
+    box-shadow: 0 -10px 26px rgba(0, 0, 0, .5);
+}
+
+/* ---- upper half: full-width dot-matrix LCD ---- */
+.amp-lcd {
+    position: relative;
+    flex: none;
+    height: var(--amp-lcd-h);
+    overflow: hidden;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(5px, 1vw, 9px);
+    padding-left: clamp(12px, 4vw, 46px);
+    /* reserve the right zone for the straddling wheel so text never sits under it */
+    padding-right: calc(var(--amp-wheel) + var(--amp-wheel-gap) + 16px);
+    background: linear-gradient(180deg, #060709 0%, #0a0c0e 55%, #070809 100%);
+    box-shadow:
+        inset 0 3px 12px rgba(0, 0, 0, .9),
+        inset 0 0 0 1px rgba(0, 0, 0, .7),
+        inset 0 -1px 0 rgba(255, 255, 255, .05);
+}
+/* reflective glass cover over the whole LCD (simurai-style glare, screen-blended) */
+.amp-lcd::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background:
+        /* diagonal light-source reflection, left of centre */
+        linear-gradient(116deg,
+            transparent 8%,
+            rgba(255, 255, 255, .04) 20%,
+            rgba(255, 255, 255, .10) 25%,
+            rgba(255, 255, 255, .14) 27%,
+            rgba(255, 255, 255, .05) 33%,
+            transparent 52%),
+        /* soft glossy bloom in the top-left corner */
+        radial-gradient(60% 90% at 6% -20%, rgba(255, 255, 255, .12), transparent 60%),
+        /* faint top-edge sheen of the glass */
+        linear-gradient(180deg, rgba(255, 255, 255, .08), transparent 24%);
+}
+
+/* ---- lower half: brushed hairline metal panel ---- */
+.amp-panel {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
     /* brushed-aluminium front panel — BLACK, built on the simurai metal recipe:
        horizontal hairline grooves over a base whose light is a HORIZONTAL band
        (the anisotropic reflection of a brushed surface — not a diagonal streak),
        plus broad point-highlights across the width so a single groove glints
        thicker where the light catches it and thinner where it doesn't. */
     background:
-        /* broad point highlights across the width (cf. simurai's "fake conical"
-           gradients): gentle left↔right luminance wave → same line, varying thickness */
         radial-gradient(40% 130% at 17% 50%, hsla(0, 0%, 100%, .05),  transparent 60%),
         radial-gradient(34% 130% at 45% 50%, hsla(0, 0%, 0%, .09),    transparent 60%),
         radial-gradient(40% 130% at 72% 50%, hsla(0, 0%, 100%, .045), transparent 60%),
         radial-gradient(30% 130% at 92% 50%, hsla(0, 0%, 0%, .07),    transparent 60%),
-        /* multi-frequency horizontal hairline grooves (fine → coarse) */
         repeating-linear-gradient(to bottom,
             hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .06) 2px),
         repeating-linear-gradient(to bottom,
             hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 2px, hsla(0, 0%, 0%, .14) 3px),
         repeating-linear-gradient(to bottom,
             hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .035) 7px),
-        /* black metal base with a horizontal anisotropic light band through the
-           middle (cf. simurai's 180deg 47%/53% highlight) */
         linear-gradient(180deg,
             hsl(0, 0%, 5%)  0%,
             hsl(0, 0%, 10%) 44%,
@@ -750,67 +807,22 @@ strong { color: var(--silver-bright); font-weight: 300; }
             hsl(0, 0%, 9%)  56%,
             hsl(0, 0%, 4%)  100%),
         var(--metal-2);
-    border-top: 1px solid var(--line-strong);
-    box-shadow:
-        inset 0 1px 0 var(--bevel-light),
-        inset 0 -1px 0 var(--bevel-dark),
-        0 -10px 26px rgba(0, 0, 0, .5);
+    border-top: 1px solid var(--bevel-dark);       /* seam shadow under the LCD */
+    box-shadow: inset 0 1px 0 var(--bevel-light);  /* seam highlight on the metal */
 }
-.amp-screw-l { left: 13px; top: 50%; transform: translateY(-50%); }
-.amp-screw-r { right: 13px; top: 50%; transform: translateY(-50%); }
+.amp-screw-l { left: 16px; bottom: 12px; }
+.amp-screw-r { right: 16px; bottom: 12px; }
 
-.amp-face {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding-inline: clamp(10px, 4vw, 56px);
-    gap: clamp(10px, 3vw, 32px);
-}
-
-/* ---- dot-matrix display (current section) ---- */
-.amp-display { margin-inline: auto; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+/* ---- dot-matrix readout (sits directly on the LCD glass) ---- */
 .amp-display-top {
     display: flex; align-items: center; gap: 7px;
-    font-size: .52rem; letter-spacing: .26em; color: var(--silver-dim); text-transform: uppercase;
+    font-size: clamp(.5rem, 1vw, .62rem); letter-spacing: .26em;
+    color: var(--silver-dim); text-transform: uppercase;
 }
 .dot-matrix {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
     display: flex;
     gap: var(--dm-char-gap);
-    padding: clamp(7px, 1.4vw, 12px) clamp(9px, 2vw, 18px);
-    border-radius: 6px;
-    background: linear-gradient(180deg, #060709 0%, #0a0c0e 55%, #070809 100%);
-    box-shadow:
-        inset 0 2px 8px rgba(0, 0, 0, .9),
-        inset 0 0 0 1px rgba(0, 0, 0, .7),
-        0 0 0 1px rgba(255, 255, 255, .05),
-        0 1px 0 rgba(255, 255, 255, .06),
-        0 0 18px rgba(207, 224, 255, .06);
-}
-/* glass cover: glossy diagonal glare + corner bloom, like a reflective LCD */
-.dot-matrix::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    border-radius: inherit;
-    mix-blend-mode: screen;
-    background:
-        /* sharp diagonal light-source reflection — shifted to the left of the glass */
-        linear-gradient(116deg,
-            transparent 6%,
-            rgba(255, 255, 255, .05) 19%,
-            rgba(255, 255, 255, .14) 24%,
-            rgba(255, 255, 255, .18) 26%,
-            rgba(255, 255, 255, .08) 31%,
-            transparent 47%),
-        /* soft glossy bloom in the top-left corner */
-        radial-gradient(95% 70% at 5% -10%, rgba(255, 255, 255, .16), transparent 56%),
-        /* faint top-edge sheen of the glass */
-        linear-gradient(180deg, rgba(255, 255, 255, .12), transparent 30%);
+    /* transparent — the LCD glass is the .amp-lcd panel itself */
 }
 .dm-char {
     display: grid;
