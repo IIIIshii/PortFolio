@@ -40,6 +40,7 @@ const SWEEP_END = angleFor(SECTIONS.length - 1); // +150deg (tick "05")
 const SWEEP_TOTAL = SWEEP_END - SWEEP_START;     // 300deg of dial travel
 
 let currentIndex = 0;
+let lastIndex = -1;
 let dragging = false;
 
 const clamp01 = (f: number): number => Math.max(0, Math.min(1, f));
@@ -62,6 +63,10 @@ function syncKnob(frac: number): void {
     dial?.style.setProperty("--angle", `${angle}deg`);
     currentIndex = nearestIndex(angle);
     paintReadout(currentIndex);
+    if (currentIndex !== lastIndex) {
+        lastIndex = currentIndex;
+        setDisplay(NAMES[currentIndex]);
+    }
     if (knob) {
         knob.setAttribute("aria-valuenow", String(currentIndex));
         knob.setAttribute("aria-valuetext", `${pad(currentIndex)} ${NAMES[currentIndex]}`);
@@ -181,6 +186,75 @@ if (clockEl) {
 /* ---------- Footer year ---------- */
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+/* ---------- Dot-matrix section display ---------- */
+/* 5×7 LED font — only the glyphs used by the section names. */
+const DM_COLS = 5;
+const DM_ROWS = 7;
+const FONT_5x7: Record<string, string[]> = {
+    " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"],
+    A: ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
+    B: ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
+    C: ["01110", "10001", "10000", "10000", "10000", "10001", "01110"],
+    E: ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+    H: ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
+    I: ["01110", "00100", "00100", "00100", "00100", "00100", "01110"],
+    J: ["00111", "00010", "00010", "00010", "00010", "10010", "01100"],
+    K: ["10001", "10010", "10100", "11000", "10100", "10010", "10001"],
+    L: ["10000", "10000", "10000", "10000", "10000", "10000", "11111"],
+    M: ["10001", "11011", "10101", "10101", "10001", "10001", "10001"],
+    N: ["10001", "11001", "11001", "10101", "10011", "10011", "10001"],
+    O: ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
+    P: ["11110", "10001", "10001", "11110", "10000", "10000", "10000"],
+    R: ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
+    S: ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
+    T: ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
+    U: ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+    X: ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
+};
+
+const dotMatrix = document.getElementById("dot-matrix");
+const dmSr = document.getElementById("dm-sr");
+const DM_LEN = Math.max(...NAMES.map((n) => n.length)); // widest section name
+const dmCells: HTMLSpanElement[][] = [];
+
+/** Build the fixed-width grid of LED dots once. */
+function buildDotMatrix(): void {
+    if (!dotMatrix) return;
+    for (let c = 0; c < DM_LEN; c++) {
+        const cell = document.createElement("div");
+        cell.className = "dm-char";
+        const dots: HTMLSpanElement[] = [];
+        for (let i = 0; i < DM_COLS * DM_ROWS; i++) {
+            const dot = document.createElement("span");
+            dot.className = "dm-dot";
+            cell.appendChild(dot);
+            dots.push(dot);
+        }
+        dotMatrix.appendChild(cell);
+        dmCells.push(dots);
+    }
+}
+
+/** Light the dots to spell `text`, centered in the display window. */
+function setDisplay(text: string): void {
+    const s = text.toUpperCase();
+    const offset = Math.max(0, Math.floor((DM_LEN - s.length) / 2));
+    for (let c = 0; c < DM_LEN; c++) {
+        const dots = dmCells[c];
+        if (!dots) continue;
+        const glyph = FONT_5x7[s[c - offset]] ?? FONT_5x7[" "];
+        for (let r = 0; r < DM_ROWS; r++) {
+            const bits = glyph[r];
+            for (let col = 0; col < DM_COLS; col++) {
+                dots[r * DM_COLS + col].classList.toggle("on", bits[col] === "1");
+            }
+        }
+    }
+    if (dmSr) dmSr.textContent = text.charAt(0) + text.slice(1).toLowerCase();
+}
+
+buildDotMatrix();
 
 /* ---------- Init ---------- */
 syncKnob(window.scrollY / maxScroll());

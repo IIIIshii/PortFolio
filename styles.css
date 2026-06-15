@@ -38,6 +38,12 @@
     --t: .35s var(--ease);
 
     --rail-h: 46px;
+    --amp-h: 96px;
+
+    /* dot-matrix display sizing */
+    --dm-dot: 4px;   /* diameter of one LED dot */
+    --dm-gap: 2px;   /* gap between dots inside a glyph */
+    --dm-char-gap: 8px; /* gap between glyph cells */
 }
 
 /* ---------- Base ---------- */
@@ -57,6 +63,8 @@ body {
     letter-spacing: .01em;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    /* clear the fixed amp panel (and, on small screens, the floating knob above it) */
+    padding-bottom: calc(var(--amp-h) + 168px);
 }
 
 .mono { font-family: var(--mono); }
@@ -558,7 +566,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .knob-nav {
     position: fixed;
     right: 14px;
-    bottom: 14px;
+    bottom: calc(var(--amp-h) + 14px); /* float just above the amp panel */
     z-index: 900;
 }
 .knob-cluster { display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -708,7 +716,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 
 /* Desktop enhancement: large centered-right knob + reserved gutter */
 @media (min-width: 1200px) {
-    body { padding-right: 384px; }
+    body { padding-right: 384px; padding-bottom: var(--amp-h); } /* knob centered, only clear the panel */
     .rail { padding-right: 26px; }
     .knob-nav { right: 48px; bottom: auto; top: 50%; transform: translateY(-50%); }
     .knob { --size: 320px; --wheel: 224px; --scale-r: 140px; }
@@ -716,6 +724,115 @@ strong { color: var(--silver-bright); font-weight: 300; }
     .tick-line { height: 12px; }
     .tick-label { font-size: .74rem; }
     .knob-caption, .knob-hint { display: block; font-size: .68rem; }
+}
+
+/* ============================================================
+   AMP FRONT PANEL  (fixed bottom bar: decorative knobs + dot display)
+   ============================================================ */
+.amp {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: var(--amp-h);
+    z-index: 850;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(0, 0, 0, .42)),
+        var(--metal-1);
+    border-top: 1px solid var(--line-strong);
+    box-shadow:
+        inset 0 1px 0 var(--bevel-light),
+        inset 0 -1px 0 var(--bevel-dark),
+        0 -10px 26px rgba(0, 0, 0, .5);
+}
+.amp-screw-l { left: 13px; top: 50%; transform: translateY(-50%); }
+.amp-screw-r { right: 13px; top: 50%; transform: translateY(-50%); }
+
+.amp-face {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-inline: clamp(34px, 5vw, 56px);
+    gap: 0;
+}
+
+/* ---- decorative rotary knobs ---- */
+.amp-knobs { display: flex; align-items: center; gap: clamp(16px, 2.6vw, 34px); }
+.amp-knob { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.amp-knob-dial {
+    position: relative;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background:
+        /* hub */
+        radial-gradient(circle at 50% 50%, #383c42 0%, #2a2d32 7%, rgba(42, 45, 50, 0) 15%),
+        /* fine concentric hairline grooves */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, .06) 0px, rgba(0, 0, 0, .11) 1px, rgba(255, 255, 255, .03) 2px),
+        /* domed body */
+        radial-gradient(circle at 50% 36%, #2c2f34 0%, #181a1d 46%, #0a0b0d 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .2),
+        inset 0 -3px 8px rgba(0, 0, 0, .7),
+        0 3px 9px rgba(0, 0, 0, .55);
+    transform: rotate(var(--k, 0deg));
+    transition: transform .4s var(--ease);
+}
+.amp-knob:hover .amp-knob-dial { transform: rotate(calc(var(--k, 0deg) + 18deg)); }
+.amp-knob-ptr {
+    position: absolute;
+    left: 50%; top: 8%;
+    width: 2px; height: 32%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--silver-bright), var(--silver-dim));
+    box-shadow: 0 0 5px var(--glow);
+}
+.amp-knob-cap { font-size: .5rem; letter-spacing: .16em; color: var(--silver-dim); text-transform: uppercase; }
+.amp-knob-lg .amp-knob-dial { width: 58px; height: 58px; }
+
+/* ---- dot-matrix display (current section) ---- */
+.amp-display { margin-inline: auto; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.amp-display-top {
+    display: flex; align-items: center; gap: 7px;
+    font-size: .52rem; letter-spacing: .26em; color: var(--silver-dim); text-transform: uppercase;
+}
+.dot-matrix {
+    display: flex;
+    gap: var(--dm-char-gap);
+    padding: 9px 14px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #050608 0%, #0a0c0e 100%);
+    box-shadow:
+        inset 0 2px 7px rgba(0, 0, 0, .9),
+        inset 0 0 0 1px rgba(0, 0, 0, .7),
+        0 0 0 1px rgba(255, 255, 255, .04),
+        0 0 16px rgba(207, 224, 255, .05);
+}
+.dm-char {
+    display: grid;
+    grid-template-columns: repeat(5, var(--dm-dot));
+    grid-auto-rows: var(--dm-dot);
+    gap: var(--dm-gap);
+}
+.dm-dot {
+    width: var(--dm-dot); height: var(--dm-dot);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .04);
+    box-shadow: inset 0 0 1px rgba(0, 0, 0, .7);
+}
+.dm-dot.on {
+    background: radial-gradient(circle at 40% 34%, #f3f8ff, #bcd3f0 44%, #5e84bb 100%);
+    box-shadow: 0 0 5px var(--glow), 0 0 2px rgba(207, 224, 255, .85);
+}
+
+/* hide the left tone knobs first, then the master knob, as space tightens */
+@media (max-width: 860px) { .amp-knobs { display: none; } }
+@media (max-width: 560px) {
+    .amp-master { display: none; }
+    :root { --dm-dot: 3px; --dm-gap: 1.5px; --dm-char-gap: 5px; }
+}
+@media (max-width: 380px) {
+    :root { --dm-dot: 2.5px; --dm-gap: 1px; --dm-char-gap: 4px; }
+    .dot-matrix { padding: 8px 10px; }
 }
 
 /* ---------- Reveal on scroll ---------- */
@@ -746,7 +863,6 @@ strong { color: var(--silver-bright); font-weight: 300; }
     .container { padding-inline: 20px; }
     .jack-handle { display: none; }
     .footer-inner { flex-direction: column; align-items: flex-start; }
-    main { padding-bottom: 170px; } /* room for floating knob */
 }
 
 /* ---------- Reduced motion ---------- */
