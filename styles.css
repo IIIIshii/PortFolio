@@ -629,7 +629,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     border-radius: 50%;
     z-index: 2;
     pointer-events: none;
-    background: radial-gradient(22% 18% at 50% 48%, rgba(255, 255, 255, .72), rgba(255, 255, 255, 0) 72%);
+    background: radial-gradient(22% 18% at 50% 48%, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 72%);
 }
 
 /* outer tick scale (clickable) — sits OUTSIDE the black wheel */
@@ -667,7 +667,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .knob-tick.active .tick-line { background: var(--silver-bright); box-shadow: 0 0 7px var(--glow); }
 .knob-tick.active .tick-label { color: var(--silver-bright); }
 
-/* the rotating wheel: concentric hairline–finished black metal */
+/* the rotating wheel: concentric hairline–finished COPPER metal */
 .knob-dial {
     position: absolute;
     left: 50%; top: 50%;
@@ -681,32 +681,32 @@ strong { color: var(--silver-bright); font-weight: 300; }
     background:
         /* raised centre cap — smooth, slightly lighter hub */
         radial-gradient(circle at 50% 50%,
-            #3a3e44 0%, #2c2f34 8%, rgba(44, 47, 52, 0) 16%),
+            #fbe4d0 0%, #efc3a0 8%, rgba(239, 195, 160, 0) 16%),
         /* ultra-fine hairline grooves (highest frequency) */
         repeating-radial-gradient(circle at 50% 50%,
-            rgba(255, 255, 255, .07) 0px,
-            rgba(0,   0,   0,   .10) 1px,
-            rgba(255, 255, 255, .04) 2px),
+            rgba(255, 255, 255, .14) 0px,
+            rgba(0,   0,   0,   .14) 1px,
+            rgba(255, 255, 255, .08) 2px),
         /* medium-frequency concentric rings for depth */
         repeating-radial-gradient(circle at 50% 50%,
-            rgba(255, 255, 255, .05) 0px,
-            rgba(0,   0,   0,   .08) 2px,
-            rgba(255, 255, 255, .03) 4px),
+            rgba(255, 255, 255, .10) 0px,
+            rgba(0,   0,   0,   .10) 2px,
+            rgba(255, 255, 255, .05) 4px),
         /* broad tonal bands — simulates uneven lathe pressure / polish */
         repeating-radial-gradient(circle at 50% 50%,
-            rgba(255, 255, 255, .025) 0px,
-            rgba(0,   0,   0,   .06)  5px,
-            rgba(255, 255, 255, .015) 10px),
-        /* domed body gradient — dark at rim, slightly lighter at centre */
+            rgba(255, 255, 255, .05) 0px,
+            rgba(0,   0,   0,   .07)  5px,
+            rgba(255, 255, 255, .03) 10px),
+        /* domed copper body — bright at centre, darker toward the rim */
         radial-gradient(circle at 50% 50%,
-            #2c2f34 0%,
-            #1a1c1f 28%,
-            #0e1012 55%,
-            #050607 100%);
+            #e7b690 0%,
+            #d0935f 30%,
+            #a5663c 62%,
+            #743f1e 100%);
     box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, .10),
-        inset 0 0 28px rgba(0, 0, 0, .82),
-        inset 0 0 0 3px rgba(0, 0, 0, .4);
+        inset 0 0 0 1px rgba(255, 255, 255, .35),
+        inset 0 0 22px rgba(0, 0, 0, .42),
+        inset 0 0 0 3px rgba(0, 0, 0, .12);
     transform: rotate(var(--angle));
     transition: transform .55s var(--ease);
 }
@@ -717,8 +717,8 @@ strong { color: var(--silver-bright); font-weight: 300; }
     height: 26%;
     transform: translateX(-50%);
     border-radius: 2px;
-    background: linear-gradient(180deg, var(--silver-bright), var(--silver-dim));
-    box-shadow: 0 0 8px var(--glow);
+    background: linear-gradient(180deg, #3b3f45, #111316);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 0 1px rgba(0, 0, 0, .6);
 }
 
 /* ============================================================
@@ -784,28 +784,28 @@ strong { color: var(--silver-bright); font-weight: 300; }
     position: relative;
     flex: 1 1 auto;
     min-height: 0;
-    /* brushed-aluminium front panel — BLACK, built on the simurai metal recipe:
+    /* brushed-aluminium front panel — DARK SILVER, built on the simurai metal recipe:
        horizontal hairline grooves over a base whose light is a HORIZONTAL band
        (the anisotropic reflection of a brushed surface — not a diagonal streak),
        plus broad point-highlights across the width so a single groove glints
        thicker where the light catches it and thinner where it doesn't. */
     background:
-        radial-gradient(40% 130% at 17% 50%, hsla(0, 0%, 100%, .05),  transparent 60%),
-        radial-gradient(34% 130% at 45% 50%, hsla(0, 0%, 0%, .09),    transparent 60%),
-        radial-gradient(40% 130% at 72% 50%, hsla(0, 0%, 100%, .045), transparent 60%),
-        radial-gradient(30% 130% at 92% 50%, hsla(0, 0%, 0%, .07),    transparent 60%),
+        radial-gradient(40% 130% at 17% 50%, hsla(0, 0%, 100%, .06),  transparent 60%),
+        radial-gradient(34% 130% at 45% 50%, hsla(0, 0%, 0%, .10),    transparent 60%),
+        radial-gradient(40% 130% at 72% 50%, hsla(0, 0%, 100%, .05),  transparent 60%),
+        radial-gradient(30% 130% at 92% 50%, hsla(0, 0%, 0%, .08),    transparent 60%),
         repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .06) 2px),
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .07) 2px),
         repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 2px, hsla(0, 0%, 0%, .14) 3px),
+            hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 2px, hsla(0, 0%, 0%, .16) 3px),
         repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .035) 7px),
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .04) 7px),
         linear-gradient(180deg,
-            hsl(0, 0%, 5%)  0%,
-            hsl(0, 0%, 10%) 44%,
-            hsl(0, 0%, 13%) 50%,
-            hsl(0, 0%, 9%)  56%,
-            hsl(0, 0%, 4%)  100%),
+            hsl(210, 5%, 15%) 0%,
+            hsl(210, 6%, 26%) 44%,
+            hsl(210, 7%, 32%) 50%,
+            hsl(210, 6%, 23%) 56%,
+            hsl(210, 5%, 13%) 100%),
         var(--metal-2);
     border-top: 1px solid var(--bevel-dark);       /* seam shadow under the LCD */
     box-shadow: inset 0 1px 0 var(--bevel-light);  /* seam highlight on the metal */
