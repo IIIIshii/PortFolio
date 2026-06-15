@@ -35,50 +35,6 @@
         </div>
     </header>
 
-    <!-- ============ ROTARY KNOB NAV ============ -->
-    <nav class="knob-nav" aria-label="セクションナビゲーション">
-        <!-- スクリーンリーダー / キーボード用フォールバック -->
-        <ul class="sr-only" id="sr-nav">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-
-        <div class="knob-cluster">
-            <span class="knob-caption mono">SELECTOR</span>
-
-            <div class="knob" id="knob"
-                 role="slider"
-                 tabindex="0"
-                 aria-label="セクションセレクタ"
-                 aria-valuemin="0"
-                 aria-valuemax="5"
-                 aria-valuenow="0"
-                 aria-valuetext="00 HOME">
-
-                <!-- 外周ティック（クリックでジャンプ） -->
-                <div class="knob-scale">
-                    <button class="knob-tick" data-index="0" data-target="home"       style="--a:-150deg" aria-label="Home へ"><span class="tick-line"></span><span class="tick-label mono">00</span></button>
-                    <button class="knob-tick" data-index="1" data-target="about"      style="--a:-90deg"  aria-label="About へ"><span class="tick-line"></span><span class="tick-label mono">01</span></button>
-                    <button class="knob-tick" data-index="2" data-target="skills"     style="--a:-30deg"  aria-label="Skills へ"><span class="tick-line"></span><span class="tick-label mono">02</span></button>
-                    <button class="knob-tick" data-index="3" data-target="projects"   style="--a:30deg"   aria-label="Projects へ"><span class="tick-line"></span><span class="tick-label mono">03</span></button>
-                    <button class="knob-tick" data-index="4" data-target="experience" style="--a:90deg"   aria-label="Experience へ"><span class="tick-line"></span><span class="tick-label mono">04</span></button>
-                    <button class="knob-tick" data-index="5" data-target="contact"    style="--a:150deg"  aria-label="Contact へ"><span class="tick-line"></span><span class="tick-label mono">05</span></button>
-                </div>
-
-                <!-- 回転するホイール本体（真っ黒・回転を示すポインタのみ） -->
-                <div class="knob-dial" id="knob-dial">
-                    <span class="knob-pointer" aria-hidden="true"></span>
-                </div>
-            </div>
-
-            <span class="knob-hint mono">drag · scroll · click</span>
-        </div>
-    </nav>
-
     <main>
         <!-- ============ HERO ============ -->
         <section id="home" class="hero">
@@ -402,22 +358,6 @@
         <span class="screw amp-screw-r" aria-hidden="true"></span>
 
         <div class="amp-face">
-            <!-- 左: 装飾ツマミ -->
-            <div class="amp-knobs" aria-hidden="true">
-                <div class="amp-knob" style="--k:-42deg">
-                    <span class="amp-knob-dial"><i class="amp-knob-ptr"></i></span>
-                    <span class="amp-knob-cap mono">BASS</span>
-                </div>
-                <div class="amp-knob" style="--k:20deg">
-                    <span class="amp-knob-dial"><i class="amp-knob-ptr"></i></span>
-                    <span class="amp-knob-cap mono">TREBLE</span>
-                </div>
-                <div class="amp-knob" style="--k:-8deg">
-                    <span class="amp-knob-dial"><i class="amp-knob-ptr"></i></span>
-                    <span class="amp-knob-cap mono">BALANCE</span>
-                </div>
-            </div>
-
             <!-- 中央: ドットマトリクス ディスプレイ（現在のセクション） -->
             <div class="amp-display">
                 <div class="amp-display-top mono">
@@ -428,13 +368,45 @@
                 <span class="sr-only" id="dm-sr" role="status" aria-live="polite">Home</span>
             </div>
 
-            <!-- 右: 大型 VOLUME ツマミ -->
-            <div class="amp-master" aria-hidden="true">
-                <div class="amp-knob amp-knob-lg" style="--k:128deg">
-                    <span class="amp-knob-dial"><i class="amp-knob-ptr"></i></span>
-                    <span class="amp-knob-cap mono">VOLUME</span>
+            <!-- 右: セクション選択ホイール（目盛りは撤去・上限/下限のみ目印） -->
+            <nav class="knob-nav" aria-label="セクションナビゲーション">
+                <!-- スクリーンリーダー / キーボード用フォールバック -->
+                <ul class="sr-only" id="sr-nav">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+
+                <div class="knob-cluster">
+                    <span class="knob-caption mono">SELECTOR</span>
+
+                    <div class="knob" id="knob"
+                         role="slider"
+                         tabindex="0"
+                         aria-label="セクションセレクタ"
+                         aria-valuemin="0"
+                         aria-valuemax="5"
+                         aria-valuenow="0"
+                         aria-valuetext="00 HOME">
+
+                        <!-- 上限/下限の目印のみ（クリックで先頭/末尾へジャンプ） -->
+                        <div class="knob-scale">
+                            <button class="knob-tick" data-index="0" data-target="home"    style="--a:-150deg" aria-label="先頭（Home）へ"><span class="tick-line"></span><span class="tick-label mono">00</span></button>
+                            <button class="knob-tick" data-index="5" data-target="contact" style="--a:150deg"  aria-label="末尾（Contact）へ"><span class="tick-line"></span><span class="tick-label mono">05</span></button>
+                        </div>
+
+                        <!-- 回転するホイール本体（真っ黒・回転を示すポインタのみ） -->
+                        <div class="knob-dial" id="knob-dial">
+                            <span class="knob-pointer" aria-hidden="true"></span>
+                        </div>
+                    </div>
+
+                    <span class="knob-hint mono">drag · scroll</span>
                 </div>
-            </div>
+            </nav>
         </div>
     </div>
 

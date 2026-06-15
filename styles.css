@@ -38,12 +38,12 @@
     --t: .35s var(--ease);
 
     --rail-h: 46px;
-    --amp-h: 96px;
+    --amp-h: 132px;
 
-    /* dot-matrix display sizing */
-    --dm-dot: 4px;   /* diameter of one LED dot */
-    --dm-gap: 2px;   /* gap between dots inside a glyph */
-    --dm-char-gap: 8px; /* gap between glyph cells */
+    /* dot-matrix display sizing (fluid so the 10-char readout always fits) */
+    --dm-dot: clamp(2px, 0.7vw, 5px);   /* diameter of one LED dot */
+    --dm-gap: clamp(1px, 0.3vw, 2px);   /* gap between dots inside a glyph */
+    --dm-char-gap: clamp(4px, 1.1vw, 9px); /* gap between glyph cells */
 }
 
 /* ---------- Base ---------- */
@@ -63,8 +63,7 @@ body {
     letter-spacing: .01em;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
-    /* clear the fixed amp panel (and, on small screens, the floating knob above it) */
-    padding-bottom: calc(var(--amp-h) + 168px);
+    padding-bottom: var(--amp-h); /* clear the fixed amp front panel */
 }
 
 .mono { font-family: var(--mono); }
@@ -561,14 +560,9 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .footer-copy { color: var(--silver-dim); font-size: .72rem; letter-spacing: .06em; }
 
 /* ============================================================
-   ROTARY KNOB NAV   (compact default → enhanced on desktop)
+   ROTARY KNOB NAV   (lives on the amp front panel, right side)
    ============================================================ */
-.knob-nav {
-    position: fixed;
-    right: 14px;
-    bottom: calc(var(--amp-h) + 14px); /* float just above the amp panel */
-    z-index: 900;
-}
+.knob-nav { display: flex; align-items: center; flex: none; }
 .knob-cluster { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .knob-caption, .knob-hint {
     display: none;
@@ -579,9 +573,9 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 
 .knob {
-    --size: 150px;     /* bounding box (footprint): black wheel + outer scale */
-    --wheel: 96px;     /* the black-metal wheel itself */
-    --scale-r: 64px;   /* radius of the tick boxes (clear of the wheel) */
+    --size: clamp(80px, 11vw, 110px);    /* footprint: wheel + the two limit marks */
+    --wheel: clamp(62px, 9vw, 90px);     /* the black-metal wheel itself */
+    --scale-r: clamp(38px, 5.6vw, 52px); /* radius of the min/max marks */
     --angle: -150deg;
     position: relative;
     width: var(--size);
@@ -630,21 +624,21 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .knob-tick {
     position: absolute;
     left: 50%; top: 50%;
-    width: 40px; height: 28px;
-    margin: -14px 0 0 -20px;               /* center the box on the knob center */
+    width: 28px; height: 18px;
+    margin: -9px 0 0 -14px;                /* center the box on the knob center */
     /* place the box on the scale circle (angle --a), oriented radially */
     transform: rotate(var(--a)) translateY(calc(-1 * var(--scale-r)));
     display: flex;
     flex-direction: column;                /* with order: label (outer) + line (inner) */
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     background: none; border: none; padding: 0;
     cursor: pointer;
-    pointer-events: auto;                  /* only the ticks are clickable */
+    pointer-events: auto;                  /* only the marks are clickable */
 }
 .tick-line {
-    width: 2px; height: 9px;
+    width: 2px; height: 7px;
     border-radius: 1px;
     background: var(--silver-dim);
     transition: background var(--t), box-shadow var(--t);
@@ -652,7 +646,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .tick-label {
     order: -1;                             /* number on the outer side of the line */
     transform: rotate(calc(-1 * var(--a)));/* keep the number upright */
-    font-size: .58rem;
+    font-size: .5rem;
     line-height: 1;
     color: var(--silver-dim);
     transition: color var(--t);
@@ -714,29 +708,47 @@ strong { color: var(--silver-bright); font-weight: 300; }
     box-shadow: 0 0 8px var(--glow);
 }
 
-/* Desktop enhancement: large centered-right knob + reserved gutter */
-@media (min-width: 1200px) {
-    body { padding-right: 384px; padding-bottom: var(--amp-h); } /* knob centered, only clear the panel */
-    .rail { padding-right: 26px; }
-    .knob-nav { right: 48px; bottom: auto; top: 50%; transform: translateY(-50%); }
-    .knob { --size: 320px; --wheel: 224px; --scale-r: 140px; }
-    .knob-tick { width: 60px; height: 40px; margin: -20px 0 0 -30px; }
-    .tick-line { height: 12px; }
-    .tick-label { font-size: .74rem; }
-    .knob-caption, .knob-hint { display: block; font-size: .68rem; }
-}
-
 /* ============================================================
-   AMP FRONT PANEL  (fixed bottom bar: decorative knobs + dot display)
+   AMP FRONT PANEL  (fixed bottom bar: dot display + section wheel)
    ============================================================ */
 .amp {
     position: fixed;
     left: 0; right: 0; bottom: 0;
     height: var(--amp-h);
     z-index: 850;
+    /* brushed-aluminium front panel — built from the page's .bg-metal recipe:
+       multi-frequency horizontal hairlines under an uneven luminance field +
+       an anisotropic reflection, so a single line glints thicker where the light
+       catches it and thinner where it doesn't. */
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(0, 0, 0, .42)),
-        var(--metal-1);
+        /* anisotropic reflection streak (topmost): modulates the hairlines across
+           the width — same line, varying apparent thickness */
+        linear-gradient(100deg,
+            transparent 5%,
+            rgba(255, 255, 255, .028) 21%,
+            rgba(255, 255, 255, .085) 35%,
+            rgba(255, 255, 255, .115) 41%,
+            rgba(255, 255, 255, .045) 49%,
+            transparent 65%,
+            rgba(255, 255, 255, .035) 82%,
+            transparent 93%),
+        /* uneven luminance (mura) — varied x so brightness shifts along each line */
+        radial-gradient(38% 150% at 11% 28%, rgba(255, 255, 255, .05), transparent 60%),
+        radial-gradient(32% 140% at 29% 74%, rgba(0, 0, 0, .14), transparent 58%),
+        radial-gradient(42% 150% at 49% 20%, rgba(255, 255, 255, .04), transparent 62%),
+        radial-gradient(34% 140% at 67% 72%, rgba(0, 0, 0, .12), transparent 58%),
+        radial-gradient(44% 150% at 85% 38%, rgba(255, 255, 255, .045), transparent 62%),
+        radial-gradient(30% 130% at 94% 12%, rgba(0, 0, 0, .09), transparent 58%),
+        /* multi-frequency horizontal hairlines — slightly different gauge than the page bg */
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 4px, hsla(0, 0%, 100%, .065) 6px),
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 2px, hsla(0, 0%, 0%, .19) 3px),
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .085) 2px),
+        /* deep directional metal base (same 350deg family as the page bg, a touch lighter) */
+        linear-gradient(350deg, hsl(0, 0%, 7%) 0%, hsl(0, 0%, 12%) 38%, hsl(0, 0%, 7%) 76%, hsl(0, 0%, 5%) 100%),
+        var(--metal-2);
     border-top: 1px solid var(--line-strong);
     box-shadow:
         inset 0 1px 0 var(--bevel-light),
@@ -750,44 +762,9 @@ strong { color: var(--silver-bright); font-weight: 300; }
     display: flex;
     align-items: center;
     height: 100%;
-    padding-inline: clamp(34px, 5vw, 56px);
-    gap: 0;
+    padding-inline: clamp(10px, 4vw, 56px);
+    gap: clamp(10px, 3vw, 32px);
 }
-
-/* ---- decorative rotary knobs ---- */
-.amp-knobs { display: flex; align-items: center; gap: clamp(16px, 2.6vw, 34px); }
-.amp-knob { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.amp-knob-dial {
-    position: relative;
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    background:
-        /* hub */
-        radial-gradient(circle at 50% 50%, #383c42 0%, #2a2d32 7%, rgba(42, 45, 50, 0) 15%),
-        /* fine concentric hairline grooves */
-        repeating-radial-gradient(circle at 50% 50%,
-            rgba(255, 255, 255, .06) 0px, rgba(0, 0, 0, .11) 1px, rgba(255, 255, 255, .03) 2px),
-        /* domed body */
-        radial-gradient(circle at 50% 36%, #2c2f34 0%, #181a1d 46%, #0a0b0d 100%);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, .2),
-        inset 0 -3px 8px rgba(0, 0, 0, .7),
-        0 3px 9px rgba(0, 0, 0, .55);
-    transform: rotate(var(--k, 0deg));
-    transition: transform .4s var(--ease);
-}
-.amp-knob:hover .amp-knob-dial { transform: rotate(calc(var(--k, 0deg) + 18deg)); }
-.amp-knob-ptr {
-    position: absolute;
-    left: 50%; top: 8%;
-    width: 2px; height: 32%;
-    transform: translateX(-50%);
-    border-radius: 2px;
-    background: linear-gradient(180deg, var(--silver-bright), var(--silver-dim));
-    box-shadow: 0 0 5px var(--glow);
-}
-.amp-knob-cap { font-size: .5rem; letter-spacing: .16em; color: var(--silver-dim); text-transform: uppercase; }
-.amp-knob-lg .amp-knob-dial { width: 58px; height: 58px; }
 
 /* ---- dot-matrix display (current section) ---- */
 .amp-display { margin-inline: auto; display: flex; flex-direction: column; align-items: center; gap: 7px; }
@@ -796,16 +773,43 @@ strong { color: var(--silver-bright); font-weight: 300; }
     font-size: .52rem; letter-spacing: .26em; color: var(--silver-dim); text-transform: uppercase;
 }
 .dot-matrix {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     display: flex;
     gap: var(--dm-char-gap);
-    padding: 9px 14px;
-    border-radius: 5px;
-    background: linear-gradient(180deg, #050608 0%, #0a0c0e 100%);
+    padding: clamp(7px, 1.4vw, 12px) clamp(9px, 2vw, 18px);
+    border-radius: 6px;
+    background: linear-gradient(180deg, #060709 0%, #0a0c0e 55%, #070809 100%);
     box-shadow:
-        inset 0 2px 7px rgba(0, 0, 0, .9),
+        inset 0 2px 8px rgba(0, 0, 0, .9),
         inset 0 0 0 1px rgba(0, 0, 0, .7),
-        0 0 0 1px rgba(255, 255, 255, .04),
-        0 0 16px rgba(207, 224, 255, .05);
+        0 0 0 1px rgba(255, 255, 255, .05),
+        0 1px 0 rgba(255, 255, 255, .06),
+        0 0 18px rgba(207, 224, 255, .06);
+}
+/* glass cover: glossy diagonal glare + corner bloom, like a reflective LCD */
+.dot-matrix::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    mix-blend-mode: screen;
+    background:
+        /* sharp diagonal light-source reflection — shifted to the left of the glass */
+        linear-gradient(116deg,
+            transparent 6%,
+            rgba(255, 255, 255, .05) 19%,
+            rgba(255, 255, 255, .14) 24%,
+            rgba(255, 255, 255, .18) 26%,
+            rgba(255, 255, 255, .08) 31%,
+            transparent 47%),
+        /* soft glossy bloom in the top-left corner */
+        radial-gradient(95% 70% at 5% -10%, rgba(255, 255, 255, .16), transparent 56%),
+        /* faint top-edge sheen of the glass */
+        linear-gradient(180deg, rgba(255, 255, 255, .12), transparent 30%);
 }
 .dm-char {
     display: grid;
@@ -822,17 +826,6 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .dm-dot.on {
     background: radial-gradient(circle at 40% 34%, #f3f8ff, #bcd3f0 44%, #5e84bb 100%);
     box-shadow: 0 0 5px var(--glow), 0 0 2px rgba(207, 224, 255, .85);
-}
-
-/* hide the left tone knobs first, then the master knob, as space tightens */
-@media (max-width: 860px) { .amp-knobs { display: none; } }
-@media (max-width: 560px) {
-    .amp-master { display: none; }
-    :root { --dm-dot: 3px; --dm-gap: 1.5px; --dm-char-gap: 5px; }
-}
-@media (max-width: 380px) {
-    :root { --dm-dot: 2.5px; --dm-gap: 1px; --dm-char-gap: 4px; }
-    .dot-matrix { padding: 8px 10px; }
 }
 
 /* ---------- Reveal on scroll ---------- */

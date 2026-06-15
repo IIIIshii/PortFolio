@@ -45,7 +45,8 @@ const fracToAngle = (f) => SWEEP_START + clamp01(f) * SWEEP_TOTAL;
 const angleToFrac = (a) => clamp01((a - SWEEP_START) / SWEEP_TOTAL);
 const nearestIndex = (angle) => clampIndex(Math.round((angle - SWEEP_START) / SWEEP_STEP));
 function paintReadout(i) {
-    ticks.forEach((t, k) => t.classList.toggle("active", k === i));
+    /* only the min/max marks remain — light one when that extreme is reached */
+    ticks.forEach((t) => t.classList.toggle("active", Number(t.dataset.index) === i));
 }
 /** Reflect a scroll fraction on the knob: dial rotation + readout + aria. No scrolling. */
 function syncKnob(frac) {

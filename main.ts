@@ -54,7 +54,8 @@ const nearestIndex = (angle: number): number =>
     clampIndex(Math.round((angle - SWEEP_START) / SWEEP_STEP));
 
 function paintReadout(i: number): void {
-    ticks.forEach((t, k) => t.classList.toggle("active", k === i));
+    /* only the min/max marks remain — light one when that extreme is reached */
+    ticks.forEach((t) => t.classList.toggle("active", Number(t.dataset.index) === i));
 }
 
 /** Reflect a scroll fraction on the knob: dial rotation + readout + aria. No scrolling. */
