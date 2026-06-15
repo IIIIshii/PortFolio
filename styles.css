@@ -1,6 +1,7 @@
 /* ============================================================
    iiiishii — Portfolio
-   Theme: near-black base + fine yellow hairline accents
+   Theme: integrated-amplifier front panel
+   black hairline metal × thin silver × concentric-hairline rotary knob nav
    ============================================================ */
 
 /* ---------- Reset ---------- */
@@ -14,74 +15,81 @@
 
 /* ---------- Tokens ---------- */
 :root {
-    --bg: #0a0a0a;
-    --bg-2: #0d0d0d;
-    --surface: #111214;
-    --text: #ececec;
-    --muted: #8a8a8a;
-    --faint: #5a5a5a;
-    --accent: #f5d000;       /* fine yellow */
-    --accent-dim: rgba(245, 208, 0, .55);
-    --hairline: rgba(255, 255, 255, .09);
-    --hairline-strong: rgba(255, 255, 255, .16);
+    --metal-0: #030304;
+    --metal-1: #0a0b0d;
+    --metal-2: #111316;
+    --metal-3: #181a1d;
 
-    --font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-    --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+    --silver: #c9ced3;
+    --silver-bright: #eef2f5;
+    --silver-dim: #7c838b;
 
-    --container: 1080px;
+    --line: rgba(255, 255, 255, .045);
+    --line-strong: rgba(255, 255, 255, .09);
+    --bevel-light: rgba(255, 255, 255, .09);
+    --bevel-dark: rgba(0, 0, 0, .65);
+    --glow: rgba(207, 224, 255, .55);
+
+    --font: "Rajdhani", system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    --mono: "Share Tech Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+    --container: 980px;
     --ease: cubic-bezier(.22, 1, .36, 1);
     --t: .35s var(--ease);
 
-    --header-h: 68px;
+    --rail-h: 46px;
+    --amp-h: 240px;                            /* tall panel: slim LCD strip + large metal area */
+    --amp-lcd-h: 92px;                         /* height of the upper LCD strip (the rest is metal) */
+    --amp-wheel: clamp(84px, 17vw, 212px);     /* section-wheel footprint (straddles both areas) */
+    --amp-wheel-gap: clamp(8px, 2.5vw, 44px);  /* wheel offset from the right edge */
+
+    /* dot-matrix display sizing (fluid so the 10-char readout always fits) */
+    --dm-dot: clamp(2px, 0.75vw, 6px);   /* diameter of one LED dot */
+    --dm-gap: clamp(1px, 0.3vw, 2px);    /* gap between dots inside a glyph */
+    --dm-char-gap: clamp(4px, 1.2vw, 10px); /* gap between glyph cells */
 }
 
 /* ---------- Base ---------- */
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: var(--header-h);
+    scroll-padding-top: 64px;
     -webkit-text-size-adjust: 100%;
 }
 
 body {
-    font-family: var(--font-sans);
-    background-color: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
+    font-family: var(--font);
+    background-color: var(--metal-0);
+    color: var(--silver);
+    line-height: 1.65;
     font-size: 16px;
+    font-weight: 300;
     letter-spacing: .01em;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    padding-bottom: var(--amp-h); /* clear the fixed amp front panel */
 }
 
-.mono { font-family: var(--font-mono); }
+.mono { font-family: var(--mono); }
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
+a { color: inherit; text-decoration: none; }
+strong { color: var(--silver-bright); font-weight: 300; }
 
-strong { color: var(--text); font-weight: 600; }
+::selection { background: var(--silver); color: #000; }
 
-::selection {
-    background: var(--accent);
-    color: #000;
-}
-
-/* Custom thin scrollbar */
 * {
     scrollbar-width: thin;
-    scrollbar-color: var(--accent-dim) transparent;
+    scrollbar-color: var(--line-strong) transparent;
 }
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: var(--metal-0); }
 ::-webkit-scrollbar-thumb {
-    background: var(--hairline-strong);
+    background: linear-gradient(180deg, #3a3e43, #1c1f22);
     border-radius: 99px;
+    border: 1px solid rgba(0, 0, 0, .5);
 }
-::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
 
 :focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--silver);
     outline-offset: 3px;
     border-radius: 2px;
 }
@@ -90,169 +98,187 @@ strong { color: var(--text); font-weight: 600; }
     width: 100%;
     max-width: var(--container);
     margin-inline: auto;
-    padding-inline: 28px;
+    padding-inline: 26px;
 }
 
-/* ---------- Background grid (very faint) ---------- */
-.bg-grid {
+/* ---------- Accessibility helpers ---------- */
+.sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
+}
+.skip-link {
+    position: fixed;
+    top: 8px; left: 50%;
+    transform: translate(-50%, -150%);
+    z-index: 2000;
+    background: var(--metal-2);
+    color: var(--silver-bright);
+    border: 1px solid var(--line-strong);
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: transform var(--t);
+}
+.skip-link:focus { transform: translate(-50%, 0); }
+
+/* ---------- Brushed-metal background ---------- */
+.bg-metal {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    background:
+        /* uneven luminance (mura) so the bright hairlines glint unevenly,
+           wide flat blotches aligned with the horizontal brush direction */
+        radial-gradient(46% 15% at 20% 22%, rgba(255, 255, 255, .030), transparent 64%),
+        radial-gradient(40% 12% at 34% 71%, rgba(0, 0, 0, .085), transparent 60%),
+        radial-gradient(54% 18% at 13% 58%, rgba(255, 255, 255, .024), transparent 66%),
+        radial-gradient(44% 14% at 58% 36%, rgba(0, 0, 0, .075), transparent 62%),
+        radial-gradient(50% 16% at 80% 64%, rgba(255, 255, 255, .022), transparent 66%),
+        radial-gradient(38% 12% at 88% 12%, rgba(0, 0, 0, .065), transparent 60%),
+        radial-gradient(48% 15% at 70% 86%, rgba(255, 255, 255, .018), transparent 64%),
+        /* multi-frequency horizontal hairline brushing (ref: .metal6, adapted to black) */
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .06) 7px),
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 3px, hsla(0, 0%, 0%, .20) 4px),
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .08) 2px),
+        /* deep directional metal base */
+        linear-gradient(350deg, hsl(0, 0%, 4%) 0%, hsl(0, 0%, 9%) 37%, hsl(0, 0%, 5%) 76%, hsl(0, 0%, 3%) 100%);
+    background-color: #000;
+}
+.bg-sheen {
     position: fixed;
     inset: 0;
     z-index: -2;
-    background-image:
-        linear-gradient(var(--hairline) 1px, transparent 1px),
-        linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
-    background-size: 64px 64px;
-    opacity: .35;
-    mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, #000 30%, transparent 75%);
-    -webkit-mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, #000 30%, transparent 75%);
     pointer-events: none;
-}
-body::before {
-    /* soft vignette to deepen the black */
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background: radial-gradient(120% 90% at 50% -10%, rgba(245, 208, 0, .04), transparent 55%);
-    pointer-events: none;
-}
-
-/* ---------- Scroll progress bar ---------- */
-.scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 2px;
-    width: 0%;
-    background: var(--accent);
-    z-index: 1100;
-    box-shadow: 0 0 8px var(--accent-dim);
+    background:
+        /* moving-light anisotropic reflection streak (the metal "shine") */
+        linear-gradient(102deg,
+            transparent 30%,
+            rgba(255, 255, 255, .035) 44%,
+            rgba(255, 255, 255, .085) 49%,
+            rgba(255, 255, 255, .11) 50%,
+            rgba(255, 255, 255, .085) 51%,
+            rgba(255, 255, 255, .035) 56%,
+            transparent 70%),
+        /* top specular bloom */
+        radial-gradient(150% 48% at 50% -12%, rgba(255, 255, 255, .12), transparent 60%),
+        /* corner glints */
+        radial-gradient(55% 45% at 100% 0%, rgba(255, 255, 255, .07), transparent 60%),
+        radial-gradient(45% 40% at 0% 100%, rgba(255, 255, 255, .04), transparent 60%),
+        /* lower vignette to deepen the black */
+        radial-gradient(130% 75% at 50% 125%, rgba(0, 0, 0, .85), transparent 58%);
 }
 
-/* ---------- Header / Nav ---------- */
-.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--header-h);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    background: rgba(10, 10, 10, .55);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--t), background var(--t);
-}
-.header.scrolled {
-    border-bottom-color: var(--hairline);
-    background: rgba(10, 10, 10, .8);
+/* ---------- Metallic / engraved text ---------- */
+.metal-text {
+    background: linear-gradient(180deg, #fafbfc 0%, #c7ccd1 38%, #767c82 52%, #b9bec3 68%, #eef2f5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
 }
 
-.nav {
-    width: 100%;
-    max-width: var(--container);
-    margin-inline: auto;
-    padding-inline: 28px;
+/* ---------- Top rail ---------- */
+.rail {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--rail-h);
+    z-index: 800;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 22px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(0, 0, 0, .35)), var(--metal-1);
+    border-bottom: 1px solid var(--line);
+    box-shadow: inset 0 1px 0 var(--bevel-light), 0 6px 18px rgba(0, 0, 0, .45);
 }
+.rail-left { display: flex; align-items: center; gap: 12px; }
+.brand {
+    font-weight: 300;
+    font-size: 1.1rem;
+    letter-spacing: .14em;
+    color: var(--silver-bright);
+    text-transform: uppercase;
+}
+.rail-sub, .rail-right {
+    font-size: .64rem;
+    letter-spacing: .22em;
+    color: var(--silver-dim);
+}
+.rail-right { display: flex; align-items: center; gap: 8px; }
+.rail-clock { color: var(--silver); }
+@media (max-width: 620px) { .rail-sub, .rail-model, .rail-dot { display: none; } }
 
-.logo {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: .02em;
+/* ---------- LEDs ---------- */
+.led {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #f3f8ff, #aebfd2 42%, #46525f 100%);
+    box-shadow: 0 0 7px var(--glow), inset 0 0 2px rgba(0, 0, 0, .5);
+    flex: none;
 }
-.logo-bracket { color: var(--accent); }
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    list-style: none;
-}
-.nav-links a {
-    position: relative;
-    font-size: .9rem;
-    color: var(--muted);
-    transition: color var(--t);
-    padding: 6px 0;
-}
-.nav-links a .nav-num {
-    font-family: var(--font-mono);
-    font-size: .7rem;
-    color: var(--faint);
-    margin-right: 4px;
-    transition: color var(--t);
-}
-/* growing fine yellow underline */
-.nav-links a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 1px;
-    width: 100%;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--t);
-}
-.nav-links a:hover { color: var(--text); }
-.nav-links a:hover::after { transform: scaleX(1); }
-.nav-links a.active { color: var(--text); }
-.nav-links a.active .nav-num { color: var(--accent); }
-.nav-links a.active::after { transform: scaleX(1); }
-
-/* Hamburger */
-.nav-toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 40px;
-    height: 40px;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-.nav-toggle span {
-    display: block;
-    width: 22px;
-    height: 1.5px;
-    background: var(--text);
-    transition: transform var(--t), opacity var(--t);
-}
-.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+.led-power { animation: ledPulse 3.4s ease-in-out infinite; }
+.led-sm { width: 7px; height: 7px; }
+.led-xs { width: 6px; height: 6px; box-shadow: 0 0 5px var(--glow); }
 
 /* ---------- Buttons ---------- */
 .btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 13px 26px;
+    font-family: var(--font);
+    font-weight: 300;
     font-size: .92rem;
-    font-weight: 500;
-    border: 1px solid var(--hairline-strong);
-    border-radius: 2px;
-    transition: border-color var(--t), color var(--t), background var(--t), transform var(--t);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: 12px 26px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--silver);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(0, 0, 0, .25)), var(--metal-2);
+    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -3px 6px var(--bevel-dark), 0 4px 12px rgba(0, 0, 0, .4);
+    transition: color var(--t), border-color var(--t), box-shadow var(--t), transform .08s ease;
 }
-.btn:hover { transform: translateY(-2px); }
-.btn-primary {
-    border-color: var(--accent-dim);
-    color: var(--accent);
+.btn:hover {
+    color: var(--silver-bright);
+    border-color: var(--line-strong);
+    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -3px 6px var(--bevel-dark), 0 0 16px rgba(207, 224, 255, .14);
 }
-.btn-primary:hover {
-    border-color: var(--accent);
-    background: rgba(245, 208, 0, .07);
+.btn:active { transform: translateY(1px); }
+.btn-ghost { background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(0, 0, 0, .15)), var(--metal-1); color: var(--silver-dim); }
+.btn-ghost:hover { color: var(--silver); }
+
+/* ---------- Panels / screws ---------- */
+.panel {
+    position: relative;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(0, 0, 0, .2)), var(--metal-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark), 0 12px 30px rgba(0, 0, 0, .45);
 }
-.btn-ghost { color: var(--muted); }
-.btn-ghost:hover { color: var(--text); border-color: var(--hairline-strong); }
+.screw {
+    position: absolute;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #dfe3e6, #7d8186 42%, #2b2d2f 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .5), 0 1px 1px rgba(0, 0, 0, .6);
+}
+.screw::after {
+    content: "";
+    position: absolute; inset: 0; margin: auto;
+    width: 8px; height: 1.5px;
+    background: rgba(0, 0, 0, .55);
+    transform: rotate(42deg);
+}
+.screw-tl { top: 11px; left: 11px; }
+.screw-tr { top: 11px; right: 11px; }
+.screw-bl { bottom: 11px; left: 11px; }
+.screw-br { bottom: 11px; right: 11px; }
 
 /* ---------- Hero ---------- */
 .hero {
@@ -260,430 +286,605 @@ body::before {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding-top: var(--header-h);
+    padding-top: var(--rail-h);
+    padding-bottom: var(--amp-h); /* keep hero content clear of the fixed panel */
 }
-.hero-inner { max-width: 760px; }
-
-.hero-eyebrow {
-    color: var(--accent);
-    font-size: .85rem;
-    letter-spacing: .15em;
+.hero-inner { max-width: 680px; }
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: .72rem;
+    letter-spacing: .3em;
+    color: var(--silver-dim);
     margin-bottom: 22px;
-    opacity: 0;
-    animation: rise .7s var(--ease) .05s forwards;
+    text-transform: uppercase;
 }
 .hero-title {
-    font-size: clamp(3rem, 11vw, 7rem);
-    line-height: .98;
-    font-weight: 700;
-    letter-spacing: -.03em;
-    margin-bottom: 18px;
-    opacity: 0;
-    animation: rise .7s var(--ease) .15s forwards;
+    font-size: clamp(3.4rem, 12vw, 7.5rem);
+    line-height: .95;
+    font-weight: 300;
+    letter-spacing: .01em;
+    margin-bottom: 14px;
 }
-.accent-dot { color: var(--accent); }
-
 .hero-role {
-    font-size: clamp(1rem, 2.4vw, 1.35rem);
-    color: var(--muted);
-    margin-bottom: 28px;
-    min-height: 1.6em;
-    opacity: 0;
-    animation: rise .7s var(--ease) .25s forwards;
-}
-.hero-role .prompt { color: var(--accent); margin-right: 8px; }
-.typed { color: var(--text); }
-.caret {
-    display: inline-block;
-    width: 9px;
-    height: 1.05em;
-    margin-left: 2px;
-    background: var(--accent);
-    vertical-align: text-bottom;
-    animation: blink 1s steps(1) infinite;
-}
-
-.hero-lead {
-    max-width: 540px;
-    color: var(--muted);
-    font-size: 1.05rem;
-    margin-bottom: 40px;
-    opacity: 0;
-    animation: rise .7s var(--ease) .35s forwards;
-}
-.hero-actions {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    opacity: 0;
-    animation: rise .7s var(--ease) .45s forwards;
-}
-
-.scroll-cue {
-    position: absolute;
-    left: 28px;
-    bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: .72rem;
-    letter-spacing: .25em;
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    font-weight: 300;
+    letter-spacing: .26em;
     text-transform: uppercase;
-    color: var(--faint);
-    transition: color var(--t);
+    color: var(--silver);
+    margin-bottom: 26px;
 }
-.scroll-cue:hover { color: var(--accent); }
-.scroll-cue-line {
-    display: block;
-    width: 54px;
-    height: 1px;
-    background: var(--hairline-strong);
+.hero-lead {
+    max-width: 520px;
+    color: var(--silver-dim);
+    font-size: 1.06rem;
+    margin-bottom: 30px;
+}
+
+/* VU meters */
+.vu {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-width: 330px;
+    margin-bottom: 38px;
+}
+.vu-row { display: flex; align-items: center; gap: 12px; }
+.vu-label { font-size: .7rem; color: var(--silver-dim); width: 1ch; }
+.vu-bar {
     position: relative;
+    flex: 1;
+    height: 9px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #0a0b0c, #16181a);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .85), inset 0 0 0 1px rgba(0, 0, 0, .5);
     overflow: hidden;
 }
-.scroll-cue-line::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    width: 40%;
-    background: var(--accent);
-    animation: slide 2s var(--ease) infinite;
+.vu-bar i {
+    display: block;
+    height: 100%;
+    width: var(--w);
+    background: repeating-linear-gradient(90deg, var(--silver) 0 4px, transparent 4px 6px);
+    box-shadow: 0 0 8px rgba(207, 224, 255, .35);
+    animation: vuPulse 2.6s ease-in-out infinite;
 }
 
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
 /* ---------- Sections ---------- */
-.section {
-    padding-block: clamp(80px, 12vw, 140px);
-    position: relative;
-}
+.section { padding-block: clamp(72px, 11vw, 128px); }
 .section-head {
     display: flex;
     align-items: center;
     gap: 18px;
-    margin-bottom: 56px;
+    margin-bottom: 46px;
 }
 .section-num {
-    color: var(--accent);
-    font-size: .85rem;
-    font-weight: 500;
+    color: var(--silver-dim);
+    font-size: .82rem;
+    letter-spacing: .1em;
 }
 .section-title {
-    font-size: clamp(1.7rem, 4vw, 2.4rem);
-    font-weight: 600;
-    letter-spacing: -.02em;
+    font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+    font-weight: 300;
+    letter-spacing: .04em;
 }
 .section-rule {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, var(--hairline-strong), transparent);
+    background: linear-gradient(90deg, var(--line-strong), transparent);
+    box-shadow: 0 1px 0 var(--bevel-light);
 }
 
 /* ---------- About ---------- */
 .about-grid {
     display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: 56px;
-    align-items: start;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+    padding: 38px;
 }
-.about-text p { color: var(--muted); margin-bottom: 18px; max-width: 56ch; }
+.about-text p { color: var(--silver-dim); margin-bottom: 16px; max-width: 54ch; }
 .about-text p:last-child { margin-bottom: 0; }
-
-.about-facts {
-    border-left: 1px solid var(--accent-dim);
-    padding-left: 24px;
+.settings-panel {
+    border-left: 1px solid var(--line);
+    padding-left: 26px;
 }
-.about-facts .fact {
-    padding-block: 12px;
-    border-bottom: 1px solid var(--hairline);
+.setting {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
 }
-.about-facts .fact:last-child { border-bottom: none; }
-.about-facts dt {
-    font-size: .72rem;
-    color: var(--faint);
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    margin-bottom: 2px;
+.setting:last-child { border-bottom: none; }
+.setting dt {
+    font-size: .66rem;
+    letter-spacing: .16em;
+    color: var(--silver-dim);
 }
-.about-facts dd { font-size: .98rem; }
-.status-dot {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-    margin-right: 8px;
-    box-shadow: 0 0 0 0 var(--accent-dim);
-    animation: pulse 2.2s ease-out infinite;
+.setting dd {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .96rem;
+    color: var(--silver);
+    text-align: right;
 }
 
 /* ---------- Skills ---------- */
 .skills-groups {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 36px;
 }
 .skill-group-title {
-    color: var(--faint);
-    font-size: .82rem;
-    margin-bottom: 18px;
+    color: var(--silver-dim);
+    font-size: .76rem;
+    letter-spacing: .14em;
+    margin-bottom: 16px;
 }
-.tag-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    list-style: none;
+.chip-list { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; }
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 300;
+    font-size: .9rem;
+    letter-spacing: .03em;
+    color: var(--silver);
+    padding: 7px 13px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(0, 0, 0, .18)), var(--metal-2);
+    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark);
+    transition: color var(--t), border-color var(--t), transform var(--t);
 }
-.tag {
-    font-family: var(--font-mono);
-    font-size: .82rem;
-    color: var(--muted);
-    padding: 7px 14px;
-    border: 1px solid var(--hairline);
-    border-radius: 2px;
-    transition: color var(--t), border-color var(--t), background var(--t), transform var(--t);
-}
-.tag:hover {
-    color: var(--accent);
-    border-color: var(--accent-dim);
-    transform: translateY(-2px);
-}
-.tag-list.small .tag { font-size: .74rem; padding: 5px 10px; }
+.chip:hover { color: var(--silver-bright); border-color: var(--line-strong); transform: translateY(-2px); }
+.chip-list.small .chip { font-size: .78rem; padding: 5px 10px; }
 
 /* ---------- Projects ---------- */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
     gap: 22px;
 }
 .project-card {
-    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 26px;
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    border-radius: 3px;
-    overflow: hidden;
-    transition: border-color var(--t), transform var(--t);
-}
-/* fine yellow corner accent that appears on hover */
-.project-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--accent);
-    transition: width .45s var(--ease);
+    padding: 28px 24px 22px;
+    transition: border-color var(--t), transform var(--t), box-shadow var(--t);
 }
 .project-card:hover {
-    border-color: var(--accent-dim);
     transform: translateY(-4px);
+    border-color: var(--line-strong);
+    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark), 0 16px 36px rgba(0, 0, 0, .5), 0 0 18px rgba(207, 224, 255, .08);
 }
-.project-card:hover::before { width: 100%; }
-
 .project-top {
     display: flex;
     justify-content: space-between;
-    font-size: .72rem;
-    color: var(--faint);
-    margin-bottom: 18px;
+    font-size: .7rem;
+    letter-spacing: .08em;
+    color: var(--silver-dim);
+    margin-bottom: 16px;
 }
-.project-index { color: var(--accent); }
-.project-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-.project-desc {
-    color: var(--muted);
-    font-size: .92rem;
-    margin-bottom: 18px;
-    flex: 1;
-}
-.project-card .tag-list { margin-bottom: 20px; }
+.project-index { color: var(--silver); }
+.project-title { font-size: 1.22rem; font-weight: 300; letter-spacing: .02em; margin-bottom: 9px; color: var(--silver-bright); }
+.project-desc { color: var(--silver-dim); font-size: .92rem; margin-bottom: 16px; flex: 1; }
+.project-card .chip-list { margin-bottom: 18px; }
 .project-links {
     display: flex;
     gap: 18px;
-    border-top: 1px solid var(--hairline);
-    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    padding-top: 15px;
 }
 .project-link {
     display: inline-flex;
     align-items: center;
     gap: 7px;
     font-size: .82rem;
-    color: var(--muted);
+    letter-spacing: .04em;
+    color: var(--silver-dim);
     transition: color var(--t);
 }
-.project-link:hover { color: var(--accent); }
+.project-link:hover { color: var(--silver-bright); }
 .icon { width: 16px; height: 16px; fill: currentColor; }
 
-/* ---------- Experience (timeline) ---------- */
-.timeline {
-    list-style: none;
-    position: relative;
-    padding-left: 28px;
-    max-width: 720px;
-}
+/* ---------- Experience (tuner-scale timeline) ---------- */
+.timeline { list-style: none; position: relative; padding-left: 30px; max-width: 720px; }
 .timeline::before {
     content: "";
     position: absolute;
-    left: 3px;
-    top: 6px;
-    bottom: 6px;
-    width: 1px;
-    background: var(--hairline-strong);
+    left: 4px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--line-strong), var(--line));
 }
-.timeline-item {
-    position: relative;
-    padding-bottom: 38px;
-}
+.timeline-item { position: relative; padding-bottom: 36px; }
 .timeline-item:last-child { padding-bottom: 0; }
 .timeline-dot {
     position: absolute;
-    left: -28px;
-    top: 6px;
-    width: 7px;
-    height: 7px;
+    left: -30px; top: 6px;
+    width: 11px; height: 11px;
     border-radius: 50%;
-    background: var(--bg);
-    border: 1px solid var(--accent);
-    transition: background var(--t), box-shadow var(--t);
+    background: radial-gradient(circle at 38% 32%, #eef3f7, #9aa2a9 45%, #3b4046 100%);
+    box-shadow: 0 0 0 4px var(--metal-0), 0 0 8px rgba(207, 224, 255, .25);
+    transition: box-shadow var(--t);
 }
-.timeline-item:hover .timeline-dot {
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent-dim);
-}
+.timeline-item:hover .timeline-dot { box-shadow: 0 0 0 4px var(--metal-0), 0 0 14px var(--glow); }
 .timeline-period {
     display: block;
-    font-size: .76rem;
-    color: var(--accent);
-    letter-spacing: .04em;
+    font-size: .74rem;
+    letter-spacing: .06em;
+    color: var(--silver-dim);
     margin-bottom: 6px;
 }
-.timeline-title {
-    font-size: 1.08rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-.timeline-desc { color: var(--muted); font-size: .92rem; }
+.timeline-title { font-size: 1.08rem; font-weight: 300; letter-spacing: .03em; color: var(--silver-bright); margin-bottom: 5px; }
+.timeline-desc { color: var(--silver-dim); font-size: .92rem; }
 
-/* ---------- Contact ---------- */
+/* ---------- Contact (RCA jacks) ---------- */
 .contact-inner { max-width: 640px; }
-.contact-lead {
-    color: var(--muted);
-    font-size: 1.05rem;
-    margin-bottom: 36px;
-}
-.contact-links { list-style: none; }
-.contact-link {
+.contact-lead { color: var(--silver-dim); font-size: 1.05rem; margin-bottom: 30px; }
+.jack-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.jack {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 20px 4px;
-    border-bottom: 1px solid var(--hairline);
-    color: var(--text);
-    transition: border-color var(--t), padding var(--t), color var(--t);
+    padding: 15px 20px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--silver);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(0, 0, 0, .18)), var(--metal-2);
+    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark);
+    transition: border-color var(--t), transform var(--t), box-shadow var(--t);
 }
-.contact-link:hover {
-    border-bottom-color: var(--accent-dim);
-    padding-left: 14px;
-    color: var(--accent);
+.jack:hover {
+    border-color: var(--line-strong);
+    transform: translateX(4px);
+    box-shadow: inset 0 1px 0 var(--bevel-light), 0 0 16px rgba(207, 224, 255, .1);
 }
-.contact-link .icon { width: 20px; height: 20px; color: var(--muted); transition: color var(--t); }
-.contact-link:hover .icon { color: var(--accent); }
-.contact-link-label { font-weight: 500; font-size: 1.05rem; }
-.contact-link-handle {
-    margin-left: auto;
-    color: var(--faint);
-    font-size: .82rem;
+.jack-port {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 42%, #e2e7ea 0 16%, #20242a 22% 52%, #0e1013 58%);
+    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .55), inset 0 2px 4px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .06);
+    flex: none;
+    transition: box-shadow var(--t);
 }
+.jack:hover .jack-port { box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .55), 0 0 10px var(--glow); }
+.jack .icon { width: 19px; height: 19px; color: var(--silver-dim); transition: color var(--t); }
+.jack:hover .icon { color: var(--silver-bright); }
+.jack-label { font-weight: 300; font-size: 1.04rem; letter-spacing: .04em; }
+.jack-handle { margin-left: auto; color: var(--silver-dim); font-size: .8rem; }
 
 /* ---------- Footer ---------- */
-.footer {
-    border-top: 1px solid var(--hairline);
-    padding-block: 30px;
+.footer { border-top: 1px solid var(--line); padding-block: 28px; box-shadow: inset 0 1px 0 var(--bevel-light); }
+.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.footer-brand { font-weight: 300; letter-spacing: .14em; color: var(--silver); text-transform: uppercase; }
+.footer-copy { color: var(--silver-dim); font-size: .72rem; letter-spacing: .06em; }
+
+/* ============================================================
+   ROTARY KNOB NAV   (lives on the amp front panel, right side)
+   ============================================================ */
+.knob-nav {
+    position: absolute;                 /* mounted over the panel, straddling both halves */
+    right: var(--amp-wheel-gap);
+    top: 50%;                           /* centred on the panel; reaches up through the seam into the LCD */
+    transform: translateY(-50%);
+    z-index: 5;
 }
-.footer-inner {
+.knob-cluster { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.knob-caption, .knob-hint {
+    display: none;
+    font-size: .6rem;
+    letter-spacing: .26em;
+    color: var(--silver-dim);
+    text-transform: uppercase;
+}
+
+.knob {
+    --size: var(--amp-wheel);                 /* footprint: wheel + the two limit marks */
+    --wheel: calc(var(--amp-wheel) * 0.78);   /* the black-metal wheel itself */
+    --scale-r: calc(var(--amp-wheel) * 0.46); /* radius of the min/max marks */
+    --angle: -150deg;
+    position: relative;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    /* two-tone bezel: matte inner band hugging the wheel + glossy outer rim */
+    background:
+        /* matte inner band (narrow, pure black — kills the gloss right around the wheel) */
+        radial-gradient(circle closest-side at 50% 50%,
+            transparent 0 78%,
+            #000000 80%,
+            #000000 85%,
+            transparent 87%),
+        /* glossy outer rim: wet specular + sheen over the jet-black face (shows 88%–100%) */
+        radial-gradient(55% 28% at 36% 6%, rgba(255, 255, 255, .36), rgba(255, 255, 255, 0) 60%),
+        radial-gradient(135% 95% at 50% -16%, rgba(255, 255, 255, .20), rgba(255, 255, 255, 0) 48%),
+        radial-gradient(circle at 50% 44%, #0f1012 0%, #050506 44%, #000000 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .20),   /* glossy outer-edge highlight */
+        inset 0 -7px 16px rgba(0, 0, 0, .8),
+        0 9px 22px rgba(0, 0, 0, .6);
+}
+.knob:active { cursor: grabbing; }
+/* fixed light source over the wheel (does NOT rotate): glossy sheen, rim bevel, cast shadow */
+.knob::before {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: var(--wheel); height: var(--wheel);
+    margin: calc(var(--wheel) / -2) 0 0 calc(var(--wheel) / -2);
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+    background:
+        /* spun-metal cross reflection (fixed light, does NOT rotate) — the
+           simurai radial "conical" highlight that sells turned/lathed metal.
+           No round glossy sheen: the radial cross is the only reflection. */
+        radial-gradient(52% 9%  at 0%   50%,  hsla(0, 0%, 100%, .30), transparent 100%),
+        radial-gradient(52% 9%  at 100% 50%,  hsla(0, 0%, 100%, .26), transparent 100%),
+        radial-gradient(9%  52% at 50%  0%,   hsla(0, 0%, 100%, .26), transparent 100%),
+        radial-gradient(9%  52% at 50%  100%, hsla(0, 0%, 100%, .34), transparent 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .22),
+        inset 0 -3px 10px rgba(0, 0, 0, .6),
+        0 12px 26px rgba(0, 0, 0, .6);
+}
+/* center specular hotspot — the bright hub where the cross reflections meet */
+.knob::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: var(--wheel); height: var(--wheel);
+    margin: calc(var(--wheel) / -2) 0 0 calc(var(--wheel) / -2);
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(22% 18% at 50% 48%, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 72%);
+}
+
+/* outer tick scale (clickable) — sits OUTSIDE the black wheel */
+.knob-scale { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.knob-tick {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 28px; height: 18px;
+    margin: -9px 0 0 -14px;                /* center the box on the knob center */
+    /* place the box on the scale circle (angle --a), oriented radially */
+    transform: rotate(var(--a)) translateY(calc(-1 * var(--scale-r)));
     display: flex;
+    flex-direction: column;                /* with order: label (outer) + line (inner) */
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    justify-content: center;
+    gap: 3px;
+    background: none; border: none; padding: 0;
+    cursor: pointer;
+    pointer-events: auto;                  /* only the marks are clickable */
 }
-.footer-logo { color: var(--accent); font-size: .9rem; }
-.footer-copy { color: var(--faint); font-size: .78rem; }
+.tick-line {
+    width: 2px; height: 7px;
+    border-radius: 1px;
+    background: var(--silver-dim);
+    transition: background var(--t), box-shadow var(--t);
+}
+.tick-label {
+    order: -1;                             /* number on the outer side of the line */
+    transform: rotate(calc(-1 * var(--a)));/* keep the number upright */
+    font-size: .5rem;
+    line-height: 1;
+    color: var(--silver-dim);
+    transition: color var(--t);
+}
+.knob-tick.active .tick-line { background: var(--silver-bright); box-shadow: 0 0 7px var(--glow); }
+.knob-tick.active .tick-label { color: var(--silver-bright); }
+
+/* the rotating wheel: concentric hairline–finished DARK SILVER (gunmetal) */
+.knob-dial {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: var(--wheel); height: var(--wheel);
+    margin: calc(var(--wheel) / -2) 0 0 calc(var(--wheel) / -2);
+    border-radius: 50%;
+    z-index: 1;
+    /* Concentric-circle hairline finish (lathe-turned / spun metal).
+       Multiple repeating-radial-gradient layers at different frequencies
+       create fine concentric grooves that catch light as the dial rotates. */
+    background:
+        /* raised centre cap — smooth, slightly lighter hub */
+        radial-gradient(circle at 50% 50%,
+            #d6dbdf 0%, #a7adb3 8%, rgba(167, 173, 179, 0) 16%),
+        /* ultra-fine hairline grooves (highest frequency) */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, .14) 0px,
+            rgba(0,   0,   0,   .14) 1px,
+            rgba(255, 255, 255, .08) 2px),
+        /* medium-frequency concentric rings for depth */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, .10) 0px,
+            rgba(0,   0,   0,   .10) 2px,
+            rgba(255, 255, 255, .05) 4px),
+        /* broad tonal bands — simulates uneven lathe pressure / polish */
+        repeating-radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, .05) 0px,
+            rgba(0,   0,   0,   .07)  5px,
+            rgba(255, 255, 255, .03) 10px),
+        /* domed gunmetal body — soft silver at centre, near-black toward the rim */
+        radial-gradient(circle at 50% 50%,
+            #9ba1a7 0%,
+            #70767c 30%,
+            #484d52 62%,
+            #2b2e32 100%);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .35),
+        inset 0 0 22px rgba(0, 0, 0, .42),
+        inset 0 0 0 3px rgba(0, 0, 0, .12);
+    transform: rotate(var(--angle));
+    transition: transform .55s var(--ease);
+}
+.knob-pointer {
+    position: absolute;
+    left: 50%; top: 7%;
+    width: 3px;
+    height: 26%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+    background: linear-gradient(180deg, #eef2f5, #b9bfc4);
+    box-shadow: 0 0 2px rgba(0, 0, 0, .6), 0 0 6px var(--glow);
+}
+
+/* ============================================================
+   AMP FRONT PANEL  (fixed bottom bar: dot display + section wheel)
+   ============================================================ */
+.amp {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: var(--amp-h);
+    z-index: 850;
+    display: flex;
+    flex-direction: column;            /* top = LCD half, bottom = metal half */
+    border-top: 1px solid var(--line-strong);
+    box-shadow: 0 -10px 26px rgba(0, 0, 0, .5);
+}
+
+/* ---- upper half: full-width dot-matrix LCD ---- */
+.amp-lcd {
+    position: relative;
+    flex: none;
+    height: var(--amp-lcd-h);
+    overflow: hidden;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(5px, 1vw, 9px);
+    padding-left: clamp(12px, 4vw, 46px);
+    /* reserve the right zone for the straddling wheel so text never sits under it */
+    padding-right: calc(var(--amp-wheel) + var(--amp-wheel-gap) + 16px);
+    background: linear-gradient(180deg, #060709 0%, #0a0c0e 55%, #070809 100%);
+    box-shadow:
+        inset 0 3px 12px rgba(0, 0, 0, .9),
+        inset 0 0 0 1px rgba(0, 0, 0, .7),
+        inset 0 -1px 0 rgba(255, 255, 255, .05);
+}
+/* reflective glass cover over the whole LCD (simurai-style glare, screen-blended) */
+.amp-lcd::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background:
+        /* diagonal light-source reflection, left of centre */
+        linear-gradient(116deg,
+            transparent 8%,
+            rgba(255, 255, 255, .04) 20%,
+            rgba(255, 255, 255, .10) 25%,
+            rgba(255, 255, 255, .14) 27%,
+            rgba(255, 255, 255, .05) 33%,
+            transparent 52%),
+        /* soft glossy bloom in the top-left corner */
+        radial-gradient(60% 90% at 6% -20%, rgba(255, 255, 255, .12), transparent 60%),
+        /* faint top-edge sheen of the glass */
+        linear-gradient(180deg, rgba(255, 255, 255, .08), transparent 24%);
+}
+
+/* ---- lower half: brushed hairline metal panel ---- */
+.amp-panel {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    /* brushed-aluminium front panel — DARK SILVER, built on the simurai metal recipe:
+       horizontal hairline grooves over a base whose light is a HORIZONTAL band
+       (the anisotropic reflection of a brushed surface — not a diagonal streak),
+       plus broad point-highlights across the width so a single groove glints
+       thicker where the light catches it and thinner where it doesn't. */
+    background:
+        radial-gradient(40% 130% at 17% 50%, hsla(0, 0%, 100%, .06),  transparent 60%),
+        radial-gradient(34% 130% at 45% 50%, hsla(0, 0%, 0%, .10),    transparent 60%),
+        radial-gradient(40% 130% at 72% 50%, hsla(0, 0%, 100%, .05),  transparent 60%),
+        radial-gradient(30% 130% at 92% 50%, hsla(0, 0%, 0%, .08),    transparent 60%),
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .07) 2px),
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 2px, hsla(0, 0%, 0%, .16) 3px),
+        repeating-linear-gradient(to bottom,
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .04) 7px),
+        linear-gradient(180deg,
+            hsl(210, 5%, 10%) 0%,
+            hsl(210, 6%, 18%) 44%,
+            hsl(210, 6%, 22%) 50%,
+            hsl(210, 6%, 16%) 56%,
+            hsl(210, 5%, 8%)  100%),
+        var(--metal-2);
+    border-top: 1px solid var(--bevel-dark);       /* seam shadow under the LCD */
+    box-shadow: inset 0 1px 0 var(--bevel-light);  /* seam highlight on the metal */
+}
+.amp-screw-l { left: 16px; bottom: 12px; }
+.amp-screw-r { right: 16px; bottom: 12px; }
+
+/* ---- dot-matrix readout (sits directly on the LCD glass) ---- */
+.amp-display-top {
+    display: flex; align-items: center; gap: 7px;
+    font-size: clamp(.5rem, 1vw, .62rem); letter-spacing: .26em;
+    color: var(--silver-dim); text-transform: uppercase;
+}
+.dot-matrix {
+    display: flex;
+    gap: var(--dm-char-gap);
+    /* transparent — the LCD glass is the .amp-lcd panel itself */
+}
+.dm-char {
+    display: grid;
+    grid-template-columns: repeat(5, var(--dm-dot));
+    grid-auto-rows: var(--dm-dot);
+    gap: var(--dm-gap);
+}
+.dm-dot {
+    width: var(--dm-dot); height: var(--dm-dot);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .04);
+    box-shadow: inset 0 0 1px rgba(0, 0, 0, .7);
+}
+.dm-dot.on {
+    background: radial-gradient(circle at 40% 34%, #f3f8ff, #bcd3f0 44%, #5e84bb 100%);
+    box-shadow: 0 0 5px var(--glow), 0 0 2px rgba(207, 224, 255, .85);
+}
 
 /* ---------- Reveal on scroll ---------- */
 .reveal {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(26px);
     transition: opacity .7s var(--ease), transform .7s var(--ease);
     will-change: opacity, transform;
 }
-.reveal.is-visible {
-    opacity: 1;
-    transform: none;
-}
+.reveal.is-visible { opacity: 1; transform: none; }
 
 /* ---------- Keyframes ---------- */
-@keyframes rise {
-    from { opacity: 0; transform: translateY(22px); }
-    to   { opacity: 1; transform: none; }
+@keyframes ledPulse {
+    0%, 100% { box-shadow: 0 0 6px var(--glow), inset 0 0 2px rgba(0, 0, 0, .5); }
+    50% { box-shadow: 0 0 12px var(--glow), inset 0 0 2px rgba(0, 0, 0, .5); }
 }
-@keyframes blink {
-    50% { opacity: 0; }
-}
-@keyframes slide {
-    0%   { transform: translateX(-100%); }
-    100% { transform: translateX(250%); }
-}
-@keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 var(--accent-dim); }
-    70%  { box-shadow: 0 0 0 7px rgba(245, 208, 0, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(245, 208, 0, 0); }
+@keyframes vuPulse {
+    0%, 100% { filter: brightness(.9); }
+    50% { filter: brightness(1.3); }
 }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
-    .about-grid { grid-template-columns: 1fr; gap: 36px; }
-    .about-facts { border-left: none; border-top: 1px solid var(--accent-dim); padding-left: 0; padding-top: 20px; }
+    .about-grid { grid-template-columns: 1fr; gap: 28px; padding: 28px; }
+    .settings-panel { border-left: none; border-top: 1px solid var(--line); padding-left: 0; padding-top: 18px; }
 }
-
-@media (max-width: 720px) {
-    .nav-toggle { display: flex; }
-    .nav-links {
-        position: fixed;
-        inset: var(--header-h) 0 auto 0;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0;
-        padding: 12px 28px 24px;
-        background: rgba(10, 10, 10, .96);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid var(--hairline);
-        clip-path: inset(0 0 100% 0);
-        transition: clip-path .4s var(--ease);
-    }
-    .nav-links.open { clip-path: inset(0 0 0 0); }
-    .nav-links li { width: 100%; }
-    .nav-links a {
-        display: block;
-        width: 100%;
-        padding: 14px 0;
-        border-bottom: 1px solid var(--hairline);
-        font-size: 1rem;
-    }
-    .nav-links a::after { display: none; }
+@media (max-width: 560px) {
+    .container { padding-inline: 20px; }
+    .jack-handle { display: none; }
     .footer-inner { flex-direction: column; align-items: flex-start; }
-    .scroll-cue { display: none; }
-}
-
-@media (max-width: 480px) {
-    .container, .nav { padding-inline: 20px; }
-    .scroll-cue { left: 20px; }
-    .contact-link-handle { display: none; }
 }
 
 /* ---------- Reduced motion ---------- */
@@ -697,6 +898,5 @@ body::before {
         transition-duration: .001ms !important;
     }
     .reveal { opacity: 1; transform: none; }
-    .hero-eyebrow, .hero-title, .hero-role, .hero-lead, .hero-actions { opacity: 1; }
-    .caret { display: none; }
+    .knob-dial { transition: none; }
 }
