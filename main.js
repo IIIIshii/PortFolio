@@ -5,13 +5,15 @@
    ============================================================ */
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* ---------- Section model ---------- */
-const SECTIONS = ["home", "about", "skills", "projects", "experience", "contact"];
-const NAMES = ["HOME", "ABOUT", "SKILLS", "PROJECTS", "EXPERIENCE", "CONTACT"];
+const SECTIONS = ["home", "new-arrival", "projects", "blogs", "experience"];
+const NAMES = ["HOME", "NEW ARRIVAL", "PROJECTS", "BLOGS", "EXPERIENCE"];
 const SWEEP_START = -150; // deg
-const SWEEP_STEP = 60; // deg  (-150 .. 150 over 6 ticks)
+const SWEEP_STEP = 75; // deg  (-150 .. 150 over 5 ticks)
 const clampIndex = (i) => Math.max(0, Math.min(SECTIONS.length - 1, i));
 const angleFor = (i) => SWEEP_START + i * SWEEP_STEP;
 const pad = (i) => `0${i}`.slice(-2);
+/* readout text shown on the dot-matrix LCD, e.g. "01.NEW ARRIVAL" */
+const DISPLAY = NAMES.map((n, i) => `${pad(i)}.${n}`);
 /* ---------- Smooth scroll for plain anchors ---------- */
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", (e) => {
@@ -56,7 +58,7 @@ function syncKnob(frac) {
     paintReadout(currentIndex);
     if (currentIndex !== lastIndex) {
         lastIndex = currentIndex;
-        setDisplay(NAMES[currentIndex]);
+        setDisplay(DISPLAY[currentIndex]);
     }
     if (knob) {
         knob.setAttribute("aria-valuenow", String(currentIndex));
@@ -198,10 +200,17 @@ const DM_COLS = 5;
 const DM_ROWS = 7;
 const FONT_5x7 = {
     " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"],
+    ".": ["00000", "00000", "00000", "00000", "00000", "00110", "00110"],
+    "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"],
+    "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+    "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"],
+    "3": ["11110", "00001", "00001", "01110", "00001", "00001", "11110"],
+    "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
     A: ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
     B: ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
     C: ["01110", "10001", "10000", "10000", "10000", "10001", "01110"],
     E: ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+    G: ["01110", "10001", "10000", "10111", "10001", "10001", "01111"],
     H: ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
     I: ["01110", "00100", "00100", "00100", "00100", "00100", "01110"],
     J: ["00111", "00010", "00010", "00010", "00010", "10010", "01100"],
@@ -215,11 +224,13 @@ const FONT_5x7 = {
     S: ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
     T: ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
     U: ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+    V: ["10001", "10001", "10001", "10001", "01010", "01010", "00100"],
+    W: ["10001", "10001", "10001", "10101", "10101", "11011", "10001"],
     X: ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
 };
 const dotMatrix = document.getElementById("dot-matrix");
 const dmSr = document.getElementById("dm-sr");
-const DM_LEN = Math.max(...NAMES.map((n) => n.length)); // widest section name
+const DM_LEN = Math.max(...DISPLAY.map((n) => n.length)); // widest readout (incl. "NN." prefix)
 const dmCells = [];
 /** Build the fixed-width grid of LED dots once. */
 function buildDotMatrix() {
@@ -239,15 +250,14 @@ function buildDotMatrix() {
         dmCells.push(dots);
     }
 }
-/** Light the dots to spell `text`, centered in the display window. */
+/** Light the dots to spell `text`, left-aligned in the display window. */
 function setDisplay(text) {
     const s = text.toUpperCase();
-    const offset = Math.max(0, Math.floor((DM_LEN - s.length) / 2));
     for (let c = 0; c < DM_LEN; c++) {
         const dots = dmCells[c];
         if (!dots)
             continue;
-        const glyph = FONT_5x7[s[c - offset]] ?? FONT_5x7[" "];
+        const glyph = FONT_5x7[s[c]] ?? FONT_5x7[" "];
         for (let r = 0; r < DM_ROWS; r++) {
             const bits = glyph[r];
             for (let col = 0; col < DM_COLS; col++) {
@@ -255,8 +265,10 @@ function setDisplay(text) {
             }
         }
     }
-    if (dmSr)
-        dmSr.textContent = text.charAt(0) + text.slice(1).toLowerCase();
+    if (dmSr) {
+        const name = text.replace(/^\d+\.\s*/, "");
+        dmSr.textContent = name.charAt(0) + name.slice(1).toLowerCase();
+    }
 }
 buildDotMatrix();
 /* ---------- Init ---------- */
