@@ -594,6 +594,22 @@ strong { color: var(--silver-bright); font-weight: 300; }
     cursor: grab;
     touch-action: none;
     user-select: none;
+    /* two-tone bezel: matte inner band hugging the wheel + glossy outer rim */
+    background:
+        /* matte inner band (narrow, pure black — kills the gloss right around the wheel) */
+        radial-gradient(circle closest-side at 50% 50%,
+            transparent 0 78%,
+            #000000 80%,
+            #000000 85%,
+            transparent 87%),
+        /* glossy outer rim: wet specular + sheen over the jet-black face (shows 88%–100%) */
+        radial-gradient(55% 28% at 36% 6%, rgba(255, 255, 255, .36), rgba(255, 255, 255, 0) 60%),
+        radial-gradient(135% 95% at 50% -16%, rgba(255, 255, 255, .20), rgba(255, 255, 255, 0) 48%),
+        radial-gradient(circle at 50% 44%, #0f1012 0%, #050506 44%, #000000 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .20),   /* glossy outer-edge highlight */
+        inset 0 -7px 16px rgba(0, 0, 0, .8),
+        0 9px 22px rgba(0, 0, 0, .6);
 }
 .knob:active { cursor: grabbing; }
 /* fixed light source over the wheel (does NOT rotate): glossy sheen, rim bevel, cast shadow */
@@ -667,7 +683,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .knob-tick.active .tick-line { background: var(--silver-bright); box-shadow: 0 0 7px var(--glow); }
 .knob-tick.active .tick-label { color: var(--silver-bright); }
 
-/* the rotating wheel: concentric hairline–finished COPPER metal */
+/* the rotating wheel: concentric hairline–finished DARK SILVER (gunmetal) */
 .knob-dial {
     position: absolute;
     left: 50%; top: 50%;
@@ -681,7 +697,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     background:
         /* raised centre cap — smooth, slightly lighter hub */
         radial-gradient(circle at 50% 50%,
-            #fbe4d0 0%, #efc3a0 8%, rgba(239, 195, 160, 0) 16%),
+            #d6dbdf 0%, #a7adb3 8%, rgba(167, 173, 179, 0) 16%),
         /* ultra-fine hairline grooves (highest frequency) */
         repeating-radial-gradient(circle at 50% 50%,
             rgba(255, 255, 255, .14) 0px,
@@ -697,12 +713,12 @@ strong { color: var(--silver-bright); font-weight: 300; }
             rgba(255, 255, 255, .05) 0px,
             rgba(0,   0,   0,   .07)  5px,
             rgba(255, 255, 255, .03) 10px),
-        /* domed copper body — bright at centre, darker toward the rim */
+        /* domed gunmetal body — soft silver at centre, near-black toward the rim */
         radial-gradient(circle at 50% 50%,
-            #e7b690 0%,
-            #d0935f 30%,
-            #a5663c 62%,
-            #743f1e 100%);
+            #9ba1a7 0%,
+            #70767c 30%,
+            #484d52 62%,
+            #2b2e32 100%);
     box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, .35),
         inset 0 0 22px rgba(0, 0, 0, .42),
@@ -717,8 +733,8 @@ strong { color: var(--silver-bright); font-weight: 300; }
     height: 26%;
     transform: translateX(-50%);
     border-radius: 2px;
-    background: linear-gradient(180deg, #3b3f45, #111316);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 0 1px rgba(0, 0, 0, .6);
+    background: linear-gradient(180deg, #eef2f5, #b9bfc4);
+    box-shadow: 0 0 2px rgba(0, 0, 0, .6), 0 0 6px var(--glow);
 }
 
 /* ============================================================
@@ -801,11 +817,11 @@ strong { color: var(--silver-bright); font-weight: 300; }
         repeating-linear-gradient(to bottom,
             hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .04) 7px),
         linear-gradient(180deg,
-            hsl(210, 5%, 15%) 0%,
-            hsl(210, 6%, 26%) 44%,
-            hsl(210, 7%, 32%) 50%,
-            hsl(210, 6%, 23%) 56%,
-            hsl(210, 5%, 13%) 100%),
+            hsl(210, 5%, 10%) 0%,
+            hsl(210, 6%, 18%) 44%,
+            hsl(210, 6%, 22%) 50%,
+            hsl(210, 6%, 16%) 56%,
+            hsl(210, 5%, 8%)  100%),
         var(--metal-2);
     border-top: 1px solid var(--bevel-dark);       /* seam shadow under the LCD */
     box-shadow: inset 0 1px 0 var(--bevel-light);  /* seam highlight on the metal */
