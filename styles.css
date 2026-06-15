@@ -27,6 +27,10 @@
     /* glossy copper finish (chrome-style gradient, copper tones) for the hairline-panel text */
     --copper-gloss: linear-gradient(180deg,
         #ffe9d2 0%, #f0c191 24%, #c67c3d 46%, #7e431d 52%, #c8804a 60%, #eebb8a 78%, #ffeada 100%);
+    /* solid copper (front-panel tone) for the section rule + card borders */
+    --copper: #c67c3d;
+    --copper-line: rgba(198, 124, 61, .5);
+    --copper-line-strong: rgba(214, 140, 74, .85);
 
     --line: rgba(255, 255, 255, .045);
     --line-strong: rgba(255, 255, 255, .09);
@@ -35,6 +39,8 @@
     --glow: rgba(207, 224, 255, .55);
 
     --font: "Rajdhani", system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    /* serif reading face for the main content (the bottom amp panel keeps --font) */
+    --font-serif: "Crimson Text", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
     --mono: "Share Tech Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
 
     --container: 980px;
@@ -63,13 +69,13 @@ html {
 }
 
 body {
-    font-family: var(--font);
+    font-family: var(--font-serif);
     background-color: var(--metal-0);
     color: var(--silver);
     line-height: 1.65;
-    font-size: 16px;
-    font-weight: 300;
-    letter-spacing: .01em;
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: .005em;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     padding-bottom: var(--amp-h); /* clear the fixed amp front panel */
@@ -129,31 +135,46 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 .skip-link:focus { transform: translate(-50%, 0); }
 
-/* ---------- Brushed-metal background ---------- */
+/* the bottom amp front panel keeps the technical sans face */
+.amp { font-family: var(--font); }
+
+/* ---------- Dark-granite background ---------- */
 .bg-metal {
     position: fixed;
     inset: 0;
     z-index: -3;
-    background:
-        /* uneven luminance (mura) so the bright hairlines glint unevenly,
-           wide flat blotches aligned with the horizontal brush direction */
-        radial-gradient(46% 15% at 20% 22%, rgba(255, 255, 255, .030), transparent 64%),
-        radial-gradient(40% 12% at 34% 71%, rgba(0, 0, 0, .085), transparent 60%),
-        radial-gradient(54% 18% at 13% 58%, rgba(255, 255, 255, .024), transparent 66%),
-        radial-gradient(44% 14% at 58% 36%, rgba(0, 0, 0, .075), transparent 62%),
-        radial-gradient(50% 16% at 80% 64%, rgba(255, 255, 255, .022), transparent 66%),
-        radial-gradient(38% 12% at 88% 12%, rgba(0, 0, 0, .065), transparent 60%),
-        radial-gradient(48% 15% at 70% 86%, rgba(255, 255, 255, .018), transparent 64%),
-        /* multi-frequency horizontal hairline brushing (ref: .metal6, adapted to black) */
-        repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .06) 7px),
-        repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 3px, hsla(0, 0%, 0%, .20) 4px),
-        repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .08) 2px),
-        /* deep directional metal base */
-        linear-gradient(350deg, hsl(0, 0%, 4%) 0%, hsl(0, 0%, 9%) 37%, hsl(0, 0%, 5%) 76%, hsl(0, 0%, 3%) 100%);
-    background-color: #000;
+    /* tiled mineral speckle (quartz / feldspar / mica grains) layered over
+       broad tonal blotches and a deep igneous-stone base */
+    background-image:
+        /* sparse bright quartz flecks */
+        radial-gradient(circle at 35% 18%, rgba(255, 255, 255, .15) 0 .8px, transparent 1.8px),
+        /* fine white mica glints */
+        radial-gradient(circle at 50% 50%, rgba(232, 236, 242, .10) 0 .6px, transparent 1.4px),
+        /* mid-grey grains */
+        radial-gradient(circle at 22% 70%, rgba(150, 156, 164, .13) 0 1px, transparent 2px),
+        /* faint warm feldspar grains */
+        radial-gradient(circle at 62% 84%, rgba(126, 116, 104, .12) 0 1px, transparent 2.2px),
+        /* dark hornblende specks (darker than the base) */
+        radial-gradient(circle at 80% 32%, rgba(0, 0, 0, .5) 0 1.2px, transparent 2.4px),
+        /* broad tonal variation across the slab */
+        radial-gradient(60% 50% at 24% 20%, rgba(255, 255, 255, .035), transparent 70%),
+        radial-gradient(55% 45% at 78% 70%, rgba(0, 0, 0, .42), transparent 72%),
+        radial-gradient(50% 44% at 58% 30%, rgba(0, 0, 0, .3), transparent 74%),
+        /* deep igneous-stone base */
+        linear-gradient(165deg, #1a1c20 0%, #121316 55%, #17191d 100%);
+    background-size:
+        70px 64px,
+        23px 23px,
+        34px 31px,
+        53px 48px,
+        41px 37px,
+        cover, cover, cover, cover;
+    background-position:
+        0 0, 11px 7px, 4px 19px, 27px 13px, 18px 30px,
+        0 0, 0 0, 0 0, 0 0;
+    background-repeat: repeat, repeat, repeat, repeat, repeat,
+        no-repeat, no-repeat, no-repeat, no-repeat;
+    background-color: #121316;
 }
 .bg-sheen {
     position: fixed;
@@ -179,13 +200,10 @@ strong { color: var(--silver-bright); font-weight: 300; }
         radial-gradient(130% 75% at 50% 125%, rgba(0, 0, 0, .85), transparent 58%);
 }
 
-/* ---------- Metallic / engraved text ---------- */
+/* ---------- Section / hero titles (flat, no gloss) ---------- */
 .metal-text {
-    background: linear-gradient(180deg, #fafbfc 0%, #c7ccd1 38%, #767c82 52%, #b9bec3 68%, #eef2f5 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
+    color: var(--silver-bright);
+    -webkit-text-fill-color: currentColor;
 }
 
 /* ---------- Top rail ---------- */
@@ -263,7 +281,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .panel {
     position: relative;
     background: linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(0, 0, 0, .2)), var(--metal-2);
-    border: 1px solid var(--line);
+    border: 1px solid var(--copper-line);
     border-radius: 8px;
     box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark), 0 12px 30px rgba(0, 0, 0, .45);
 }
@@ -379,8 +397,8 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .section-rule {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, var(--line-strong), transparent);
-    box-shadow: 0 1px 0 var(--bevel-light);
+    background: linear-gradient(90deg, var(--copper), transparent);
+    box-shadow: 0 0 6px rgba(198, 124, 61, .35);
 }
 
 /* ---------- New Arrival ---------- */
@@ -413,14 +431,14 @@ strong { color: var(--silver-bright); font-weight: 300; }
     align-items: center;
     gap: 22px;
     padding: 18px 22px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--copper-line);
     border-radius: 6px;
     background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(0, 0, 0, .18)), var(--metal-2);
     box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark);
     transition: border-color var(--t), transform var(--t), box-shadow var(--t);
 }
 .blog-link:hover {
-    border-color: var(--line-strong);
+    border-color: var(--copper-line-strong);
     transform: translateX(4px);
     box-shadow: inset 0 1px 0 var(--bevel-light), 0 0 16px rgba(207, 224, 255, .1);
 }
@@ -465,7 +483,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 .project-card:hover {
     transform: translateY(-4px);
-    border-color: var(--line-strong);
+    border-color: var(--copper-line-strong);
     box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark), 0 16px 36px rgba(0, 0, 0, .5), 0 0 18px rgba(207, 224, 255, .08);
 }
 .project-top {
