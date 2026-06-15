@@ -597,10 +597,16 @@ strong { color: var(--silver-bright); font-weight: 300; }
     z-index: 2;
     pointer-events: none;
     background:
+        /* spun-metal cross reflection (fixed light, does NOT rotate) — the
+           simurai radial "conical" highlight that sells turned/lathed metal */
+        radial-gradient(46% 7%  at 0%   50%,  hsla(0, 0%, 100%, .16), transparent 100%),
+        radial-gradient(46% 7%  at 100% 50%,  hsla(0, 0%, 100%, .14), transparent 100%),
+        radial-gradient(7%  46% at 50%  0%,   hsla(0, 0%, 100%, .14), transparent 100%),
+        radial-gradient(7%  46% at 50%  100%, hsla(0, 0%, 100%, .18), transparent 100%),
         /* broad glossy sheen over the upper half */
-        radial-gradient(82% 62% at 42% 10%, rgba(255, 255, 255, .34), rgba(255, 255, 255, 0) 62%),
+        radial-gradient(82% 62% at 42% 10%, rgba(255, 255, 255, .26), rgba(255, 255, 255, 0) 62%),
         /* faint cool bounce light from below */
-        radial-gradient(70% 44% at 50% 98%, rgba(190, 205, 225, .12), rgba(255, 255, 255, 0) 55%);
+        radial-gradient(70% 44% at 50% 98%, rgba(190, 205, 225, .10), rgba(255, 255, 255, 0) 55%);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, .22),
         inset 0 -3px 10px rgba(0, 0, 0, .6),
@@ -716,38 +722,33 @@ strong { color: var(--silver-bright); font-weight: 300; }
     left: 0; right: 0; bottom: 0;
     height: var(--amp-h);
     z-index: 850;
-    /* brushed-aluminium front panel — built from the page's .bg-metal recipe:
-       multi-frequency horizontal hairlines under an uneven luminance field +
-       an anisotropic reflection, so a single line glints thicker where the light
-       catches it and thinner where it doesn't. */
+    /* brushed-aluminium front panel — BLACK, built on the simurai metal recipe:
+       horizontal hairline grooves over a base whose light is a HORIZONTAL band
+       (the anisotropic reflection of a brushed surface — not a diagonal streak),
+       plus broad point-highlights across the width so a single groove glints
+       thicker where the light catches it and thinner where it doesn't. */
     background:
-        /* anisotropic reflection streak (topmost): modulates the hairlines across
-           the width — same line, varying apparent thickness */
-        linear-gradient(100deg,
-            transparent 5%,
-            rgba(255, 255, 255, .028) 21%,
-            rgba(255, 255, 255, .085) 35%,
-            rgba(255, 255, 255, .115) 41%,
-            rgba(255, 255, 255, .045) 49%,
-            transparent 65%,
-            rgba(255, 255, 255, .035) 82%,
-            transparent 93%),
-        /* uneven luminance (mura) — varied x so brightness shifts along each line */
-        radial-gradient(38% 150% at 11% 28%, rgba(255, 255, 255, .05), transparent 60%),
-        radial-gradient(32% 140% at 29% 74%, rgba(0, 0, 0, .14), transparent 58%),
-        radial-gradient(42% 150% at 49% 20%, rgba(255, 255, 255, .04), transparent 62%),
-        radial-gradient(34% 140% at 67% 72%, rgba(0, 0, 0, .12), transparent 58%),
-        radial-gradient(44% 150% at 85% 38%, rgba(255, 255, 255, .045), transparent 62%),
-        radial-gradient(30% 130% at 94% 12%, rgba(0, 0, 0, .09), transparent 58%),
-        /* multi-frequency horizontal hairlines — slightly different gauge than the page bg */
+        /* broad point highlights across the width (cf. simurai's "fake conical"
+           gradients): gentle left↔right luminance wave → same line, varying thickness */
+        radial-gradient(40% 130% at 17% 50%, hsla(0, 0%, 100%, .05),  transparent 60%),
+        radial-gradient(34% 130% at 45% 50%, hsla(0, 0%, 0%, .09),    transparent 60%),
+        radial-gradient(40% 130% at 72% 50%, hsla(0, 0%, 100%, .045), transparent 60%),
+        radial-gradient(30% 130% at 92% 50%, hsla(0, 0%, 0%, .07),    transparent 60%),
+        /* multi-frequency horizontal hairline grooves (fine → coarse) */
         repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 4px, hsla(0, 0%, 100%, .065) 6px),
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .06) 2px),
         repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 2px, hsla(0, 0%, 0%, .19) 3px),
+            hsla(0, 0%, 0%, 0) 0, hsla(0, 0%, 0%, 0) 2px, hsla(0, 0%, 0%, .14) 3px),
         repeating-linear-gradient(to bottom,
-            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 1px, hsla(0, 0%, 100%, .085) 2px),
-        /* deep directional metal base (same 350deg family as the page bg, a touch lighter) */
-        linear-gradient(350deg, hsl(0, 0%, 7%) 0%, hsl(0, 0%, 12%) 38%, hsl(0, 0%, 7%) 76%, hsl(0, 0%, 5%) 100%),
+            hsla(0, 0%, 100%, 0) 0, hsla(0, 0%, 100%, 0) 5px, hsla(0, 0%, 100%, .035) 7px),
+        /* black metal base with a horizontal anisotropic light band through the
+           middle (cf. simurai's 180deg 47%/53% highlight) */
+        linear-gradient(180deg,
+            hsl(0, 0%, 5%)  0%,
+            hsl(0, 0%, 10%) 44%,
+            hsl(0, 0%, 13%) 50%,
+            hsl(0, 0%, 9%)  56%,
+            hsl(0, 0%, 4%)  100%),
         var(--metal-2);
     border-top: 1px solid var(--line-strong);
     box-shadow:
