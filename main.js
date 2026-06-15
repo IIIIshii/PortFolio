@@ -5,10 +5,10 @@
    ============================================================ */
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* ---------- Section model ---------- */
-const SECTIONS = ["home", "about", "skills", "projects", "experience", "contact"];
-const NAMES = ["HOME", "ABOUT", "SKILLS", "PROJECTS", "EXPERIENCE", "CONTACT"];
+const SECTIONS = ["home", "new-arrival", "projects", "blogs", "experience"];
+const NAMES = ["HOME", "NEW ARRIVAL", "PROJECTS", "BLOGS", "EXPERIENCE"];
 const SWEEP_START = -150; // deg
-const SWEEP_STEP = 60; // deg  (-150 .. 150 over 6 ticks)
+const SWEEP_STEP = 75; // deg  (-150 .. 150 over 5 ticks)
 const clampIndex = (i) => Math.max(0, Math.min(SECTIONS.length - 1, i));
 const angleFor = (i) => SWEEP_START + i * SWEEP_STEP;
 const pad = (i) => `0${i}`.slice(-2);
@@ -202,6 +202,7 @@ const FONT_5x7 = {
     B: ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
     C: ["01110", "10001", "10000", "10000", "10000", "10001", "01110"],
     E: ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+    G: ["01110", "10001", "10000", "10111", "10001", "10001", "01111"],
     H: ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
     I: ["01110", "00100", "00100", "00100", "00100", "00100", "01110"],
     J: ["00111", "00010", "00010", "00010", "00010", "10010", "01100"],
@@ -215,6 +216,8 @@ const FONT_5x7 = {
     S: ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
     T: ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
     U: ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+    V: ["10001", "10001", "10001", "10001", "01010", "01010", "00100"],
+    W: ["10001", "10001", "10001", "10101", "10101", "11011", "10001"],
     X: ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
 };
 const dotMatrix = document.getElementById("dot-matrix");
