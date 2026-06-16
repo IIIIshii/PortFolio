@@ -961,6 +961,9 @@ strong { color: var(--silver-bright); font-weight: 300; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 560px) {
+    /* bigger section wheel on phones (easier to grab); LCD/contact paddings track
+       --amp-wheel automatically, so the readout field just narrows to match */
+    :root { --amp-wheel: clamp(100px, 27vw, 128px); }
     .container { padding-inline: 20px; }
     .blog-link { gap: 14px; flex-wrap: wrap; }
     .blog-arrow { display: none; }
