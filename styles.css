@@ -42,10 +42,10 @@
     --glow-rgb: 207, 224, 255;
     --glow: rgba(var(--glow-rgb), .55);
 
-    --font: "Rajdhani", system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-    /* serif reading face for the main content (the bottom amp panel keeps --font) */
-    --font-serif: "Crimson Text", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
-    --mono: "Share Tech Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+    /* unified UI face: IBM Plex Sans JP everywhere (the LCD dot-matrix is CSS-drawn, not a font) */
+    --font: "IBM Plex Sans JP", system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    --font-serif: var(--font);
+    --mono: var(--font);
 
     --container: 980px;
     --ease: cubic-bezier(.22, 1, .36, 1);
@@ -527,7 +527,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     position: absolute;
     left: 4px; top: 6px; bottom: 6px;
     width: 2px;
-    background: linear-gradient(180deg, var(--line-strong), var(--line));
+    background: linear-gradient(180deg, var(--copper-line-strong), var(--copper-line));
 }
 .timeline-item { position: relative; padding-bottom: 36px; }
 .timeline-item:last-child { padding-bottom: 0; }
@@ -536,7 +536,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     left: -30px; top: 6px;
     width: 11px; height: 11px;
     border-radius: 50%;
-    background: radial-gradient(circle at 38% 32%, #eef3f7, #9aa2a9 45%, #3b4046 100%);
+    background: radial-gradient(circle at 38% 32%, #f0d3b6, var(--copper) 45%, #6b3f1e 100%);
     box-shadow: 0 0 0 4px var(--metal-0), 0 0 8px rgba(var(--glow-rgb), .25);
     transition: box-shadow var(--t);
 }
@@ -854,9 +854,9 @@ strong { color: var(--silver-bright); font-weight: 300; }
     left: clamp(26px, 4.4vw, 64px);
     top: 42%;
     transform: translateY(-50%);
-    /* hi-fi wordmark: serif so the "I" has serifs (reads as letters, not bars) */
-    font-family: "Crimson Text", var(--font);
-    font-weight: 400;
+    /* hi-fi wordmark */
+    font-family: var(--font);
+    font-weight: 700;
     font-size: clamp(1.8rem, 4.4vw, 3.1rem);
     letter-spacing: .1em;
     text-transform: uppercase;
