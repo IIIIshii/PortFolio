@@ -577,7 +577,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 
 .knob {
-    --size: var(--amp-wheel);                 /* footprint: wheel + the two limit marks */
+    --size: calc(var(--amp-wheel) * 0.90);    /* footprint: wheel + the two limit marks (extra black margin around the marks) */
     --wheel: calc(var(--amp-wheel) * 0.78);   /* the black-metal wheel itself */
     --scale-r: calc(var(--amp-wheel) * 0.46); /* radius of the min/max marks */
     --angle: -150deg;
@@ -852,11 +852,11 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .amp-contact-label {
     position: absolute;
     left: clamp(26px, 4.4vw, 64px);
-    top: 42%;
+    top: 50%;
     transform: translateY(-50%);
     /* hi-fi wordmark */
     font-family: var(--font);
-    font-weight: 700;
+    font-weight: 300;
     font-size: clamp(1.8rem, 4.4vw, 3.1rem);
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -904,10 +904,9 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 .amp-btn-label {
     font-family: var(--font);
-    font-weight: 700;
+    font-weight: 300;
     font-size: clamp(.74rem, 1.5vw, .9rem);
     letter-spacing: .12em;
-    text-transform: uppercase;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .5));
 }
 
