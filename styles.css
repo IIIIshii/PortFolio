@@ -28,15 +28,19 @@
     --copper-gloss: linear-gradient(180deg,
         #ffe9d2 0%, #f0c191 24%, #c67c3d 46%, #7e431d 52%, #c8804a 60%, #eebb8a 78%, #ffeada 100%);
     /* solid copper (front-panel tone) for the section rule + card borders */
-    --copper: #c67c3d;
-    --copper-line: rgba(198, 124, 61, .5);
+    --copper-rgb: 198, 124, 61;
+    --copper: rgb(var(--copper-rgb));
+    --copper-line: rgba(var(--copper-rgb), .5);
     --copper-line-strong: rgba(214, 140, 74, .85);
 
     --line: rgba(255, 255, 255, .045);
     --line-strong: rgba(255, 255, 255, .09);
     --bevel-light: rgba(255, 255, 255, .09);
     --bevel-dark: rgba(0, 0, 0, .65);
-    --glow: rgba(207, 224, 255, .55);
+    /* repeated bevel frame: top highlight + bottom shadow (panel / blog / chip) */
+    --bevel-frame: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark);
+    --glow-rgb: 207, 224, 255;
+    --glow: rgba(var(--glow-rgb), .55);
 
     --font: "Rajdhani", system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
     /* serif reading face for the main content (the bottom amp panel keeps --font) */
@@ -48,7 +52,7 @@
     --t: .35s var(--ease);
 
     --rail-h: 46px;
-    --amp-h: 240px;                            /* tall panel: slim LCD strip + large metal area */
+    --amp-h: 210px;                            /* panel: slim LCD strip + slimmer metal area */
     --amp-lcd-h: 92px;                         /* height of the upper LCD strip (the rest is metal) */
     --amp-wheel: clamp(84px, 17vw, 212px);     /* section-wheel footprint (straddles both areas) */
     --amp-wheel-gap: clamp(8px, 2.5vw, 44px);  /* wheel offset from the right edge */
@@ -271,7 +275,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .btn:hover {
     color: var(--silver-bright);
     border-color: var(--line-strong);
-    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -3px 6px var(--bevel-dark), 0 0 16px rgba(207, 224, 255, .14);
+    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -3px 6px var(--bevel-dark), 0 0 16px rgba(var(--glow-rgb), .14);
 }
 .btn:active { transform: translateY(1px); }
 .btn-ghost { background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(0, 0, 0, .15)), var(--metal-1); color: var(--silver-dim); }
@@ -283,7 +287,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     background: linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(0, 0, 0, .2)), var(--metal-2);
     border: 1px solid var(--copper-line);
     border-radius: 8px;
-    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark), 0 12px 30px rgba(0, 0, 0, .45);
+    box-shadow: var(--bevel-frame), 0 12px 30px rgba(0, 0, 0, .45);
 }
 .screw {
     position: absolute;
@@ -370,7 +374,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     height: 100%;
     width: var(--w);
     background: repeating-linear-gradient(90deg, var(--silver) 0 4px, transparent 4px 6px);
-    box-shadow: 0 0 8px rgba(207, 224, 255, .35);
+    box-shadow: 0 0 8px rgba(var(--glow-rgb), .35);
     animation: vuPulse 2.6s ease-in-out infinite;
 }
 
@@ -398,7 +402,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     flex: 1;
     height: 1px;
     background: linear-gradient(90deg, var(--copper), transparent);
-    box-shadow: 0 0 6px rgba(198, 124, 61, .35);
+    box-shadow: 0 0 6px rgba(var(--copper-rgb), .35);
 }
 
 /* ---------- New Arrival ---------- */
@@ -434,13 +438,13 @@ strong { color: var(--silver-bright); font-weight: 300; }
     border: 1px solid var(--copper-line);
     border-radius: 6px;
     background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(0, 0, 0, .18)), var(--metal-2);
-    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark);
+    box-shadow: var(--bevel-frame);
     transition: border-color var(--t), transform var(--t), box-shadow var(--t);
 }
 .blog-link:hover {
     border-color: var(--copper-line-strong);
     transform: translateX(4px);
-    box-shadow: inset 0 1px 0 var(--bevel-light), 0 0 16px rgba(207, 224, 255, .1);
+    box-shadow: inset 0 1px 0 var(--bevel-light), 0 0 16px rgba(var(--glow-rgb), .1);
 }
 .blog-date { flex: none; width: 6ch; font-size: .76rem; letter-spacing: .06em; color: var(--silver-dim); }
 .blog-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
@@ -463,7 +467,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     border: 1px solid var(--line);
     border-radius: 3px;
     background: linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(0, 0, 0, .18)), var(--metal-2);
-    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark);
+    box-shadow: var(--bevel-frame);
     transition: color var(--t), border-color var(--t), transform var(--t);
 }
 .chip:hover { color: var(--silver-bright); border-color: var(--line-strong); transform: translateY(-2px); }
@@ -484,7 +488,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .project-card:hover {
     transform: translateY(-4px);
     border-color: var(--copper-line-strong);
-    box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark), 0 16px 36px rgba(0, 0, 0, .5), 0 0 18px rgba(207, 224, 255, .08);
+    box-shadow: var(--bevel-frame), 0 16px 36px rgba(0, 0, 0, .5), 0 0 18px rgba(var(--glow-rgb), .08);
 }
 .project-top {
     display: flex;
@@ -533,7 +537,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
     width: 11px; height: 11px;
     border-radius: 50%;
     background: radial-gradient(circle at 38% 32%, #eef3f7, #9aa2a9 45%, #3b4046 100%);
-    box-shadow: 0 0 0 4px var(--metal-0), 0 0 8px rgba(207, 224, 255, .25);
+    box-shadow: 0 0 0 4px var(--metal-0), 0 0 8px rgba(var(--glow-rgb), .25);
     transition: box-shadow var(--t);
 }
 .timeline-item:hover .timeline-dot { box-shadow: 0 0 0 4px var(--metal-0), 0 0 14px var(--glow); }
@@ -821,6 +825,16 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .amp-screw-l { left: 16px; bottom: 12px; }
 .amp-screw-r { right: 16px; bottom: 12px; }
 
+/* glossy copper finish, clipped to the glyphs (IIIISHII wordmark + button labels) */
+.amp-contact-label,
+.amp-btn-label {
+    background: var(--copper-gloss);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
 /* ---- Contact buttons mounted on the hairline metal panel ---- */
 .amp-contact {
     position: absolute;
@@ -846,12 +860,6 @@ strong { color: var(--silver-bright); font-weight: 300; }
     font-size: clamp(1.8rem, 4.4vw, 3.1rem);
     letter-spacing: .1em;
     text-transform: uppercase;
-    /* glossy copper finish */
-    background: var(--copper-gloss);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .55));
 }
 .amp-btn {
@@ -861,8 +869,9 @@ strong { color: var(--silver-bright); font-weight: 300; }
     gap: 8px;
     color: var(--silver);
 }
-/* round SILVER hairline-finished metal button
-   (spun-metal recipe adapted from simurai's "radial metal", standard-syntax gradients) */
+/* round BLACK concentric-hairline metal button
+   (spun-metal recipe adapted from simurai's "radial metal", standard-syntax gradients):
+   fixed-light cross highlights + fine concentric grooves over a domed black body) */
 .amp-btn-disc {
     display: block;
     width: clamp(32px, 5vw, 40px);
@@ -870,14 +879,25 @@ strong { color: var(--silver-bright); font-weight: 300; }
     border-radius: 50%;
     background-color: #000;
     background-image:
-        /* glossy top specular highlight (the wet piano-black shine) */
-        radial-gradient(58% 42% at 50% 16%, rgba(255,255,255,.7) 0%, rgba(255,255,255,.18) 36%, rgba(255,255,255,0) 66%),
-        /* faint reflected sheen along the bottom */
-        radial-gradient(85% 55% at 50% 102%, rgba(255,255,255,.12) 0%, rgba(255,255,255,0) 58%),
-        /* deep, smooth piano-black body */
-        radial-gradient(circle at 50% 36%, #2b2b2e 0%, #161618 26%, #060607 64%, #000 100%);
+        /* spun-metal cross reflection (fixed light, does NOT rotate) */
+        radial-gradient(50% 8%  at 0%   50%, hsla(0, 0%, 100%, .20), transparent 100%),
+        radial-gradient(50% 8%  at 100% 50%, hsla(0, 0%, 100%, .16), transparent 100%),
+        radial-gradient(8%  50% at 50%  0%,  hsla(0, 0%, 100%, .16), transparent 100%),
+        radial-gradient(8%  50% at 50%  100%, hsla(0, 0%, 100%, .24), transparent 100%),
+        /* fine concentric hairline grooves (highest frequency) */
+        repeating-radial-gradient(circle at 50% 50%,
+            hsla(0, 0%, 100%, .10) 0px,
+            hsla(0, 0%,   0%, .12) 1px,
+            hsla(0, 0%, 100%, .05) 2px),
+        /* medium-frequency concentric rings for depth */
+        repeating-radial-gradient(circle at 50% 50%,
+            hsla(0, 0%, 100%, .06) 0px,
+            hsla(0, 0%,   0%, .08) 3px,
+            hsla(0, 0%, 100%, .03) 5px),
+        /* domed black body — soft graphite at the centre, jet-black toward the rim */
+        radial-gradient(circle at 50% 42%, #2b2b2e 0%, #161618 30%, #060607 66%, #000 100%);
     box-shadow:
-        inset 0  1px 1px rgba(255,255,255,.45),   /* crisp top rim glint */
+        inset 0  1px 1px rgba(255,255,255,.40),   /* crisp top rim glint */
         inset 0 -5px 9px rgba(0,0,0,.9),          /* lower inner shading for the dome */
         inset 0  0   0   1px rgba(0,0,0,.85),     /* tight black edge */
         0 5px 13px rgba(0,0,0,.6);                /* drop shadow */
@@ -888,12 +908,6 @@ strong { color: var(--silver-bright); font-weight: 300; }
     font-size: clamp(.74rem, 1.5vw, .9rem);
     letter-spacing: .12em;
     text-transform: uppercase;
-    /* same glossy copper finish as the IIIISHII wordmark */
-    background: var(--copper-gloss);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .5));
 }
 
@@ -923,7 +937,7 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 .dm-dot.on {
     background: radial-gradient(circle at 40% 34%, #f3f8ff, #bcd3f0 44%, #5e84bb 100%);
-    box-shadow: 0 0 5px var(--glow), 0 0 2px rgba(207, 224, 255, .85);
+    box-shadow: 0 0 5px var(--glow), 0 0 2px rgba(var(--glow-rgb), .85);
 }
 
 /* ---------- Reveal on scroll ---------- */
