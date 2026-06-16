@@ -7,8 +7,8 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 /* ---------- Section model ---------- */
 const SECTIONS = ["home", "new-arrival", "projects", "blogs", "experience"];
 const NAMES = ["HOME", "NEW ARRIVAL", "PROJECTS", "BLOGS", "EXPERIENCE"];
-const SWEEP_START = -150; // deg
-const SWEEP_STEP = 75; // deg  (-150 .. 150 over 5 ticks)
+const SWEEP_START = -125; // deg
+const SWEEP_STEP = 62.5; // deg  (-125 .. 125 over 5 ticks)
 const clampIndex = (i) => Math.max(0, Math.min(SECTIONS.length - 1, i));
 const angleFor = (i) => SWEEP_START + i * SWEEP_STEP;
 const pad = (i) => `0${i}`.slice(-2);
@@ -34,8 +34,8 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 const knob = document.getElementById("knob");
 const dial = document.getElementById("knob-dial");
 const ticks = Array.from(document.querySelectorAll(".knob-tick"));
-const SWEEP_END = angleFor(SECTIONS.length - 1); // +150deg (tick "05")
-const SWEEP_TOTAL = SWEEP_END - SWEEP_START; // 300deg of dial travel
+const SWEEP_END = angleFor(SECTIONS.length - 1); // +125deg (tick "05")
+const SWEEP_TOTAL = SWEEP_END - SWEEP_START; // 250deg of dial travel
 let currentIndex = 0;
 let lastIndex = -1;
 let dragging = false;
