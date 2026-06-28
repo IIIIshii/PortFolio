@@ -404,6 +404,13 @@ strong { color: var(--silver-bright); font-weight: 300; }
     background: linear-gradient(90deg, var(--copper), transparent);
     box-shadow: 0 0 6px rgba(var(--copper-rgb), .35);
 }
+.section-note {
+    margin-top: -34px;
+    margin-bottom: 40px;
+    color: var(--silver-dim);
+    font-size: .8rem;
+    letter-spacing: .14em;
+}
 
 /* ---------- New Arrival ---------- */
 .arrival-panel { padding: 32px 34px; }
@@ -452,6 +459,23 @@ strong { color: var(--silver-bright); font-weight: 300; }
 .blog-desc { color: var(--silver-dim); font-size: .9rem; }
 .blog-arrow { flex: none; color: var(--silver-dim); transition: color var(--t); }
 .blog-link:hover .blog-arrow { color: var(--silver-bright); }
+/* 近日公開予定 (Coming soon) */
+.blog-link.is-soon {
+    background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .35)), #0b0c0d;
+    border-color: #000;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03);
+    cursor: default;
+    pointer-events: none;
+}
+.blog-link.is-soon:hover {
+    transform: none;
+    border-color: #000;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03);
+}
+.blog-link.is-soon .blog-title { color: var(--silver-dim); }
+.blog-link.is-soon .blog-date,
+.blog-link.is-soon .blog-desc { color: #5d636a; }
+.blog-link.is-soon .blog-arrow { color: var(--silver-dim); }
 
 /* ---------- Chips (project tags) ---------- */
 .chip-list { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; }
@@ -519,6 +543,28 @@ strong { color: var(--silver-bright); font-weight: 300; }
 }
 .project-link:hover { color: var(--silver-bright); }
 .icon { width: 16px; height: 16px; fill: currentColor; }
+
+/* ---------- 近日公開予定 (Coming soon) ---------- */
+.project-card.is-soon {
+    background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .35)), #0b0c0d;
+    border-color: #000;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 12px 30px rgba(0, 0, 0, .5);
+}
+.project-card.is-soon:hover {
+    transform: none;
+    border-color: #000;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 12px 30px rgba(0, 0, 0, .5);
+}
+.project-card.is-soon .project-index,
+.project-card.is-soon .project-title { color: var(--silver-dim); }
+.project-card.is-soon .project-desc { color: #5d636a; }
+.project-card.is-soon .chip { opacity: .5; }
+.project-card.is-soon .project-links { border-top-color: rgba(0, 0, 0, .6); }
+.project-link.is-disabled {
+    color: #5d636a;
+    cursor: default;
+    pointer-events: none;
+}
 
 /* ---------- Experience (tuner-scale timeline) ---------- */
 .timeline { list-style: none; position: relative; padding-left: 30px; max-width: 720px; }
