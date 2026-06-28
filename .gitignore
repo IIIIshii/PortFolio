@@ -1,0 +1,5 @@
+# ビルド成果物（サーバー側で tsc して生成する）
+main.js
+
+# 依存
+node_modules/
